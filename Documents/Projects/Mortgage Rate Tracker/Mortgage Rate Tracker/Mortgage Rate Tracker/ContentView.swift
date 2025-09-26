@@ -3,8 +3,18 @@ import SwiftData
 
 struct ContentView: View {
     @State private var fetcher: MortgageRateFetcher
-    @Query private var rateRecords: [RateRecord]
+    @Query(sort: \.date, order: .reverse) private var rateRecords: [RateRecord]
     @Environment(\.modelContext) private var modelContext
+
+    private var groupedRecords: [Date: [RateRecord]] {
+        Dictionary(grouping: rateRecords) { record in
+            Calendar.current.startOfDay(for: record.date)
+        }
+    }
+
+    private var sortedGroupedDates: [Date] {
+        groupedRecords.keys.sorted().reversed()
+    }
 
     init() {
         _fetcher = State(initialValue: MortgageRateFetcher(modelContext: nil))
@@ -38,10 +48,22 @@ struct ContentView: View {
 
                 Spacer()
 
-                List(rateRecords) { record in
-                    VStack(alignment: .leading) {
-                        Text(record.date, style: .date)
-                        Text("\(record.loanType): \(record.interestRate) / \(record.apr)")
+                List(sortedGroupedDates, id: \.self) { date in
+                    HStack(alignment: .center) {
+                        Text(date, formatter: dateFormatter)
+                            .font(.footnote)
+
+                        VStack(alignment: .leading) {
+                            if let record15 = groupedRecords[date]?.first(where: { $0.loanType.contains("15") }) {
+                                Text("15 Year: \(record15.interestRate) / \(record15.apr)")
+                                    .font(.footnote)
+                            }
+                            if let record30 = groupedRecords[date]?.first(where: { $0.loanType.contains("30") }) {
+                                Text("30 Year: \(record30.interestRate) / \(record30.apr)")
+                                    .font(.footnote)
+                            }
+                        }
+                        .padding(.leading)
                     }
                 }
             }
@@ -58,6 +80,12 @@ struct ContentView: View {
                 fetcher.fetchData()
             }
         }
+    }
+
+    private var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd/yy"
+        return formatter
     }
 
     private func rateFor(term: String) -> MortgageRate? {
