@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import BackgroundTasks
+import Combine
 
 @main
 class Mortgage_Rate_TrackerApp: ObservableObject, App {
