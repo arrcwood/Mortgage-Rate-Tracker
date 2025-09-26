@@ -4,9 +4,9 @@ import BackgroundTasks
 
 @main
 class Mortgage_Rate_TrackerApp: ObservableObject, App {
-    var sharedModelContainer: ModelContainer
+    @Published var sharedModelContainer: ModelContainer
 
-    init() {
+    required init() {
         do {
             sharedModelContainer = try ModelContainer(for: RateRecord.self)
         } catch {
