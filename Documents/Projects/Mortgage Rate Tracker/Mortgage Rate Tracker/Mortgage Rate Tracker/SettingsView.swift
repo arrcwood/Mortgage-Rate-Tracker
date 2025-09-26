@@ -6,18 +6,16 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationView {
-            List(viewModel.financialInstitutions) { institution in
-                VStack(alignment: .leading) {
-                    Text(institution.name)
-                        .font(.headline)
-                    ForEach(institution.website, id: \.self) { website in
-                        Link(website, destination: URL(string: website)!)
-                            .font(.subheadline)
-                            .foregroundColor(.blue)
+            List {
+                Section(header: Text("Financial Institutions")) {
+                    ForEach(viewModel.financialInstitutions) { institution in
+                        NavigationLink(destination: FinancialInstitutionDetailView(institution: institution)) {
+                            Text(institution.name)
+                        }
                     }
                 }
             }
-            .navigationTitle("Financial Institutions")
+            .navigationTitle("Settings")
         }
     }
 }
