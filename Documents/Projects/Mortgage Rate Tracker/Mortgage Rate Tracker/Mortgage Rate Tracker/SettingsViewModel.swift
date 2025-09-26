@@ -5,7 +5,7 @@ import Combine
 class SettingsViewModel: ObservableObject {
     @Published var financialInstitutions: [FinancialInstitution] = []
 
-    private let json_data = '''
+    private let json_data = """
     [
         {
             "name": "Bank of America",
@@ -68,7 +68,7 @@ class SettingsViewModel: ObservableObject {
             ]
         }
     ]
-    '''
+    """
 
     init() {
         loadFinancialInstitutions()
