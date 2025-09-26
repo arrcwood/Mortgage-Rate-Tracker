@@ -1,5 +1,6 @@
 
 import Foundation
+import Combine
 
 class SettingsViewModel: ObservableObject {
     @Published var financialInstitutions: [FinancialInstitution] = []
