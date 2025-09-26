@@ -28,11 +28,10 @@ class MortgageRateFetcher: ObservableObject {
         self.rates.removeAll()
         do {
             let doc: Document = try SwiftSoup.parse(html)
-            let tables = try doc.select("table")
-            for table in tables {
-                let h3 = try table.previousElementSibling()?.select("h3").first()
-                if let h3 = h3, try h3.text().contains("VA Loans") {
-                    let rows = try table.select("tbody tr")
+            let rateTables = try doc.select("div.ratesTable")
+            for rateTable in rateTables {
+                if let h2 = try rateTable.select("h2").first(), try h2.text().contains("VA Loan Rates") {
+                    let rows = try rateTable.select("tbody tr")
                     for row in rows {
                         let th = try row.select("th").first()
                         let tds = try row.select("td")
