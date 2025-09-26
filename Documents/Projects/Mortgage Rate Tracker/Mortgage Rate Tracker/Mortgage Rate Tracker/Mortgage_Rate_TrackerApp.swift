@@ -3,7 +3,7 @@ import SwiftData
 import BackgroundTasks
 
 @main
-struct Mortgage_Rate_TrackerApp: App {
+class Mortgage_Rate_TrackerApp: ObservableObject, App {
     var sharedModelContainer: ModelContainer
 
     init() {
