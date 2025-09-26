@@ -8,31 +8,11 @@ class MortgageRateFetcher: ObservableObject {
     @Published var rates: [MortgageRate] = []
     var modelContext: ModelContext?
 
-    private var lastFetchDate: Date? {
-        get { UserDefaults.standard.object(forKey: "lastFetchDate") as? Date }
-        set { UserDefaults.standard.set(newValue, forKey: "lastFetchDate") }
-    }
-
     init(modelContext: ModelContext?) {
         self.modelContext = modelContext
     }
 
     func fetchData() {
-        var calendar = Calendar.current
-        calendar.timeZone = TimeZone(identifier: "EST")!
-        let now = Date()
-        let noonToday = calendar.date(bySettingHour: 12, minute: 0, second: 0, of: now)!
-
-        if let lastFetch = lastFetchDate, lastFetch > noonToday && calendar.isDateInToday(lastFetch) {
-            // Already fetched today after noon
-            return
-        }
-        
-        if now < noonToday && lastFetchDate != nil && calendar.isDateInToday(lastFetchDate!) {
-            // It's before noon, but we already fetched today
-            return
-        }
-
         guard let url = URL(string: "https://www.navyfederal.org/loans-cards/mortgage/mortgage-rates.html") else {
             return
         }
@@ -46,7 +26,6 @@ class MortgageRateFetcher: ObservableObject {
 
             DispatchQueue.main.async {
                 self.parse(html: html)
-                self.lastFetchDate = Date()
             }
         }.resume()
     }
