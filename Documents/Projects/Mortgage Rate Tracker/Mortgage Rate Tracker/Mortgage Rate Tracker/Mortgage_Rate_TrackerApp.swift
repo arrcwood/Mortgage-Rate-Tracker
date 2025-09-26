@@ -14,7 +14,7 @@ struct Mortgage_Rate_TrackerApp: App {
         }
         
         // Register the background task when the app initializes
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.yourapp.fetchrates", using: nil) { task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.arrcwood.MortgageRateTracker.fetchrates", using: nil) { task in
             self.handleAppRefresh(task: task as! BGAppRefreshTask)
         }
         // Schedule the background task immediately after registration
@@ -29,7 +29,7 @@ struct Mortgage_Rate_TrackerApp: App {
     }
 
     func scheduleAppRefresh() {
-        let request = BGAppRefreshTaskRequest(identifier: "com.yourapp.fetchrates")
+        let request = BGAppRefreshTaskRequest(identifier: "com.arrcwood.MortgageRateTracker.fetchrates")
         var calendar = Calendar.current
         calendar.timeZone = TimeZone(identifier: "EST")!
         
