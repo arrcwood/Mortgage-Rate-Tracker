@@ -33,9 +33,22 @@
 		7A776FB52E85F3040019D8B6 /* Mortgage Rate TrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Mortgage Rate TrackerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7AA13C322E862CC70088B1C3 /* Exceptions for "Mortgage Rate Tracker" folder in "Mortgage Rate Tracker" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Mortgage-Rate-Tracker-Info.plist",
+			);
+			target = 7A776F9B2E85F2FF0019D8B6 /* Mortgage Rate Tracker */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		7A776F9E2E85F2FF0019D8B6 /* Mortgage Rate Tracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7AA13C322E862CC70088B1C3 /* Exceptions for "Mortgage Rate Tracker" folder in "Mortgage Rate Tracker" target */,
+			);
 			path = "Mortgage Rate Tracker";
 			sourceTree = "<group>";
 		};
@@ -407,6 +420,7 @@
 				DEVELOPMENT_TEAM = E83ALF4354;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Mortgage-Rate-Tracker-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -444,6 +458,7 @@
 				DEVELOPMENT_TEAM = E83ALF4354;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Mortgage-Rate-Tracker-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

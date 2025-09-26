@@ -17,6 +17,8 @@ struct Mortgage_Rate_TrackerApp: App {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.yourapp.fetchrates", using: nil) { task in
             self.handleAppRefresh(task: task as! BGAppRefreshTask)
         }
+        // Schedule the background task immediately after registration
+        scheduleAppRefresh()
     }
 
     var body: some Scene {
@@ -24,9 +26,6 @@ struct Mortgage_Rate_TrackerApp: App {
             ContentView()
         }
         .modelContainer(sharedModelContainer)
-        .onAppear { // Schedule the background task when the app appears
-            scheduleAppRefresh()
-        }
     }
 
     func scheduleAppRefresh() {
