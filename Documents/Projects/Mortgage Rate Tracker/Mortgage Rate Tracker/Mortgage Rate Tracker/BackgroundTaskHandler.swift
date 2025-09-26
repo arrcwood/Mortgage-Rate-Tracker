@@ -1,6 +1,7 @@
 import Foundation
 import BackgroundTasks
 import SwiftData
+import Combine
 
 class BackgroundTaskHandler: ObservableObject {
     private var modelContainer: ModelContainer
