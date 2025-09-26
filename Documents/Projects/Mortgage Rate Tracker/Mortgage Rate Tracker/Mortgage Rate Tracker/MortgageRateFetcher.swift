@@ -1,5 +1,6 @@
 
 import Foundation
+import Combine
 import SwiftSoup
 
 class MortgageRateFetcher: ObservableObject {
