@@ -5,8 +5,8 @@ struct FinancialInstitutionDetailView: View {
     let institution: FinancialInstitution
 
     var body: some View {
-        List(institution.website, id: \.self) { website in
-            Link(website, destination: URL(string: website)!)
+        List {
+            Text("This is the detail view for \(institution.name)")
         }
         .navigationTitle(institution.name)
     }
