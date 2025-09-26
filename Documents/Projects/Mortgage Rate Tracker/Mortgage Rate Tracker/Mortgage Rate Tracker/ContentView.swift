@@ -3,7 +3,7 @@ import SwiftData
 
 struct ContentView: View {
     @State private var fetcher: MortgageRateFetcher
-    @Query(sort: \.date, order: .reverse) private var rateRecords: [RateRecord]
+    @Query(sort: \RateRecord.date, order: .reverse) private var rateRecords: [RateRecord]
     @Environment(\.modelContext) private var modelContext
 
     private var groupedRecords: [Date: [RateRecord]] {
