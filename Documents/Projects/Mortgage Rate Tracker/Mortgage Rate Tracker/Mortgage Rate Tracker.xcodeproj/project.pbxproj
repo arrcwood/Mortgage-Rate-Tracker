@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7A1E35B62E873BC700C8EB66 /* financialInstitutions.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A1E35B52E873BC600C8EB66 /* financialInstitutions.json */; };
 		7A776FEC2E861C8C0019D8B6 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 7A776FEB2E861C8C0019D8B6 /* SwiftSoup */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7A1E35B52E873BC600C8EB66 /* financialInstitutions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = financialInstitutions.json; sourceTree = "<group>"; };
 		7A776F9C2E85F2FF0019D8B6 /* Mortgage Rate Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mortgage Rate Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A776FAB2E85F3040019D8B6 /* Mortgage Rate TrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Mortgage Rate TrackerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A776FB52E85F3040019D8B6 /* Mortgage Rate TrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Mortgage Rate TrackerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -80,6 +82,7 @@
 		7A776F932E85F2FF0019D8B6 = {
 			isa = PBXGroup;
 			children = (
+				7A1E35B52E873BC600C8EB66 /* financialInstitutions.json */,
 				7A776F9E2E85F2FF0019D8B6 /* Mortgage Rate Tracker */,
 				7A776FAE2E85F3040019D8B6 /* Mortgage Rate TrackerTests */,
 				7A776FB82E85F3040019D8B6 /* Mortgage Rate TrackerUITests */,
@@ -221,6 +224,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7A1E35B62E873BC700C8EB66 /* financialInstitutions.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

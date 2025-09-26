@@ -6,7 +6,6 @@ struct ContentView: View {
     @State private var fetcher: MortgageRateFetcher
     @Query(sort: \RateRecord.date, order: .reverse) private var rateRecords: [RateRecord]
     @Environment(\.modelContext) private var modelContext
-    @State private var selectedTab = 0
 
     private var groupedRecords: [Date: [RateRecord]] {
         Dictionary(grouping: rateRecords) { record in
@@ -24,7 +23,7 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-            TabView(selection: $selectedTab) {
+            TabView {
                 VStack {
                     Text("Mortgage Rate Tracker")
                         .font(.largeTitle)
@@ -77,15 +76,12 @@ struct ContentView: View {
                 .tabItem {
                     Label("Rates", systemImage: "house.fill")
                 }
-                .tag(0)
 
                 SettingsView()
                     .tabItem {
                         Label("Settings", systemImage: "gear")
                     }
-                    .tag(1)
             }
-            .navigationTitle(selectedTab == 0 ? "Rates" : "Settings")
         }
     }
 
