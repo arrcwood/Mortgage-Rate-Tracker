@@ -22,8 +22,8 @@ struct ContentView: View {
     }
 
     var body: some View {
-        TabView {
-            NavigationView {
+        NavigationView {
+            TabView {
                 VStack {
                     Text("Mortgage Rate Tracker")
                         .font(.largeTitle)
@@ -70,20 +70,19 @@ struct ContentView: View {
                     }
                 }
                 .navigationBarTitleDisplayMode(.inline)
-                
                 .onAppear {
                     fetcher.modelContext = modelContext
                     fetcher.fetchData()
                 }
-            }
-            .tabItem {
-                Label("Rates", systemImage: "house.fill")
-            }
-
-            SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gear")
+                    Label("Rates", systemImage: "house.fill")
                 }
+
+                SettingsView()
+                    .tabItem {
+                        Label("Settings", systemImage: "gear")
+                    }
+            }
         }
     }
 

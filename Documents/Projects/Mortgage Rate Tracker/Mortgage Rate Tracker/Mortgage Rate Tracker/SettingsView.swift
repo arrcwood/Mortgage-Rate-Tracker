@@ -5,18 +5,16 @@ struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
 
     var body: some View {
-        NavigationView {
-            List {
-                Section(header: Text("Financial Institutions")) {
-                    ForEach(viewModel.financialInstitutions) { institution in
-                        NavigationLink(destination: FinancialInstitutionDetailView(institution: institution)) {
-                            Text(institution.name)
-                        }
+        List {
+            Section(header: Text("Financial Institutions")) {
+                ForEach(viewModel.financialInstitutions) { institution in
+                    NavigationLink(destination: FinancialInstitutionDetailView(institution: institution)) {
+                        Text(institution.name)
                     }
                 }
             }
-            .navigationTitle("Settings")
         }
+        .navigationTitle("Settings")
     }
 }
 
