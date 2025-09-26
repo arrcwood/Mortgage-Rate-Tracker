@@ -14,7 +14,6 @@ struct SettingsView: View {
                 }
             }
         }
-        .navigationTitle("Settings")
     }
 }
 
