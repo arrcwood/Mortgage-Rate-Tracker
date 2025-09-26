@@ -1,3 +1,4 @@
+
 import SwiftUI
 import SwiftData
 
@@ -21,58 +22,68 @@ struct ContentView: View {
     }
 
     var body: some View {
-        NavigationView {
-            VStack {
-                Text("Mortgage Rate Tracker")
-                    .font(.largeTitle)
+        TabView {
+            NavigationView {
+                VStack {
+                    Text("Mortgage Rate Tracker")
+                        .font(.largeTitle)
+                        .padding()
+
+                    Grid {
+                        GridRow {
+                            Text("Term").font(.headline)
+                            Text("Interest Rate").font(.headline)
+                            Text("APR").font(.headline)
+                        }
+                        GridRow {
+                            Text("15 year")
+                            Text(rateFor(term: "15")?.interestRate ?? "N/A")
+                            Text(rateFor(term: "15")?.apr ?? "N/A")
+                        }
+                        GridRow {
+                            Text("30 year")
+                            Text(rateFor(term: "30")?.interestRate ?? "N/A")
+                            Text(rateFor(term: "30")?.apr ?? "N/A")
+                        }
+                    }
                     .padding()
 
-                Grid {
-                    GridRow {
-                        Text("Term").font(.headline)
-                        Text("Interest Rate").font(.headline)
-                        Text("APR").font(.headline)
-                    }
-                    GridRow {
-                        Text("15 year")
-                        Text(rateFor(term: "15")?.interestRate ?? "N/A")
-                        Text(rateFor(term: "15")?.apr ?? "N/A")
-                    }
-                    GridRow {
-                        Text("30 year")
-                        Text(rateFor(term: "30")?.interestRate ?? "N/A")
-                        Text(rateFor(term: "30")?.apr ?? "N/A")
-                    }
-                }
-                .padding()
+                    Spacer()
 
-                Spacer()
+                    List(sortedGroupedDates, id: \.self) { date in
+                        HStack(alignment: .center) {
+                            Text(date, formatter: dateFormatter)
+                                .font(.footnote)
 
-                List(sortedGroupedDates, id: \.self) { date in
-                    HStack(alignment: .center) {
-                        Text(date, formatter: dateFormatter)
-                            .font(.footnote)
-
-                        VStack(alignment: .leading) {
-                            if let record15 = groupedRecords[date]?.first(where: { $0.loanType.contains("15") }) {
-                                Text("15 Year: \(record15.interestRate) / \(record15.apr)")
-                                    .font(.footnote)
+                            VStack(alignment: .leading) {
+                                if let record15 = groupedRecords[date]?.first(where: { $0.loanType.contains("15") }) {
+                                    Text("15 Year: \(record15.interestRate) / \(record15.apr)")
+                                        .font(.footnote)
+                                }
+                                if let record30 = groupedRecords[date]?.first(where: { $0.loanType.contains("30") }) {
+                                    Text("30 Year: \(record30.interestRate) / \(record30.apr)")
+                                        .font(.footnote)
+                                }
                             }
-                            if let record30 = groupedRecords[date]?.first(where: { $0.loanType.contains("30") }) {
-                                Text("30 Year: \(record30.interestRate) / \(record30.apr)")
-                                    .font(.footnote)
-                            }
+                            .padding(.leading)
                         }
-                        .padding(.leading)
                     }
                 }
+                .navigationBarTitleDisplayMode(.inline)
+                
+                .onAppear {
+                    fetcher.modelContext = modelContext
+                    fetcher.fetchData()
+                }
             }
-            .navigationBarTitleDisplayMode(.inline)
-            
-            .onAppear {
-                fetcher.modelContext = modelContext
-                fetcher.fetchData()
+            .tabItem {
+                Label("Rates", systemImage: "house.fill")
             }
+
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
+                }
         }
     }
 
