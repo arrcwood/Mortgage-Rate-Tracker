@@ -14,8 +14,8 @@ struct Mortgage_Rate_TrackerApp: App {
         }
         
         // Register the background task when the app initializes
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.arrcwood.MortgageRateTracker.fetchrates", using: nil) { task in
-            self.handleAppRefresh(task: task as! BGAppRefreshTask)
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.arrcwood.MortgageRateTracker.fetchrates", using: nil) { [weak self] task in
+            self?.handleAppRefresh(task: task as! BGAppRefreshTask)
         }
         // Schedule the background task immediately after registration
         scheduleAppRefresh()
