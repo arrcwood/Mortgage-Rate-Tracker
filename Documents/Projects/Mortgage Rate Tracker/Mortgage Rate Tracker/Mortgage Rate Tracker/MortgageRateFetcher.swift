@@ -2,28 +2,47 @@
 import Foundation
 import Combine
 import SwiftSoup
+import SwiftData
 
 class MortgageRateFetcher: ObservableObject {
     @Published var rates: [MortgageRate] = []
-    
+    var modelContext: ModelContext?
+
+    private var lastFetchDate: Date? {
+        get { UserDefaults.standard.object(forKey: "lastFetchDate") as? Date }
+        set { UserDefaults.standard.set(newValue, forKey: "lastFetchDate") }
+    }
+
+    init(modelContext: ModelContext?) {
+        self.modelContext = modelContext
+    }
+
     func fetchData() {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        if let lastFetch = lastFetchDate, lastFetch >= today {
+            // Already fetched today
+            return
+        }
+
         guard let url = URL(string: "https://www.navyfederal.org/loans-cards/mortgage/mortgage-rates.html") else {
             return
         }
-        
+
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data, error == nil else {
                 return
             }
-            
+
             let html = String(data: data, encoding: .utf8)!
-            
+
             DispatchQueue.main.async {
                 self.parse(html: html)
+                self.lastFetchDate = Date()
             }
         }.resume()
     }
-    
+
     func parse(html: String) {
         self.rates.removeAll()
         do {
@@ -40,9 +59,12 @@ class MortgageRateFetcher: ObservableObject {
                             let interestRate = try tds[0].text()
                             let discountPoints = try tds[1].text()
                             let apr = try tds[2].text()
-                            
+
                             let rate = MortgageRate(loanType: loanType, interestRate: interestRate, discountPoints: discountPoints, apr: apr)
                             self.rates.append(rate)
+
+                            let record = RateRecord(date: Date(), loanType: loanType, interestRate: interestRate, apr: apr)
+                            modelContext?.insert(record)
                         }
                     }
                 }

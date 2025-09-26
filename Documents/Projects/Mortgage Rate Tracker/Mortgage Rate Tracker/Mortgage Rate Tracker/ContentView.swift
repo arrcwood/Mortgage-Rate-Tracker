@@ -1,40 +1,62 @@
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
-    @StateObject private var fetcher = MortgageRateFetcher()
+    @State private var fetcher: MortgageRateFetcher
+    @Query private var rateRecords: [RateRecord]
+    @Environment(\.modelContext) private var modelContext
+
+    init() {
+        _fetcher = State(initialValue: MortgageRateFetcher(modelContext: nil))
+    }
 
     var body: some View {
-        VStack {
-            Text("Mortgage Rate Tracker")
-                .font(.largeTitle)
+        NavigationView {
+            VStack {
+                Text("Mortgage Rate Tracker")
+                    .font(.largeTitle)
+                    .padding()
+
+                Grid {
+                    GridRow {
+                        Text("Term").font(.headline)
+                        Text("Interest Rate").font(.headline)
+                        Text("APR").font(.headline)
+                    }
+                    GridRow {
+                        Text("15 year")
+                        Text(rateFor(term: "15")?.interestRate ?? "N/A")
+                        Text(rateFor(term: "15")?.apr ?? "N/A")
+                    }
+                    GridRow {
+                        Text("30 year")
+                        Text(rateFor(term: "30")?.interestRate ?? "N/A")
+                        Text(rateFor(term: "30")?.apr ?? "N/A")
+                    }
+                }
                 .padding()
 
-            Grid {
-                GridRow {
-                    Text("Term").font(.headline)
-                    Text("Interest Rate").font(.headline)
-                    Text("APR").font(.headline)
-                }
-                GridRow {
-                    Text("15 year")
-                    Text(rateFor(term: "15")?.interestRate ?? "N/A")
-                    Text(rateFor(term: "15")?.apr ?? "N/A")
-                }
-                GridRow {
-                    Text("30 year")
-                    Text(rateFor(term: "30")?.interestRate ?? "N/A")
-                    Text(rateFor(term: "30")?.apr ?? "N/A")
+                Spacer()
+
+                List(rateRecords) { record in
+                    VStack(alignment: .leading) {
+                        Text(record.date, style: .date)
+                        Text("\(record.loanType): \(record.interestRate) / \(record.apr)")
+                    }
                 }
             }
-            .padding()
-
-            Button("Refresh") {
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Refresh") {
+                        fetcher.fetchData()
+                    }
+                }
+            }
+            .onAppear {
+                fetcher.modelContext = modelContext
                 fetcher.fetchData()
             }
-            .padding()
-        }
-        .onAppear {
-            fetcher.fetchData()
         }
     }
 
