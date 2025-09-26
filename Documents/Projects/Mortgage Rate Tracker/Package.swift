@@ -19,7 +19,7 @@ let package = Package(
         .target(
             name: "Mortgage-Rate-Tracker",
             dependencies: ["SwiftSoup"],
-            path: "Mortgage Rate Tracker/Shared"
+            path: "Mortgage Rate Tracker/Mortgage Rate Tracker"
         )
     ]
 )
