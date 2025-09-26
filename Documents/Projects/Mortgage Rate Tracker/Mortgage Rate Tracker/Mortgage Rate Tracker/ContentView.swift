@@ -68,13 +68,7 @@ struct ContentView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Refresh") {
-                        fetcher.fetchData()
-                    }
-                }
-            }
+            
             .onAppear {
                 fetcher.modelContext = modelContext
                 fetcher.fetchData()

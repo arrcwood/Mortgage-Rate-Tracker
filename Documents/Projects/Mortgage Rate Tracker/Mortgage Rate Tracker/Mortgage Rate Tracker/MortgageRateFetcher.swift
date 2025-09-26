@@ -18,10 +18,18 @@ class MortgageRateFetcher: ObservableObject {
     }
 
     func fetchData() {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        if let lastFetch = lastFetchDate, lastFetch >= today {
-            // Already fetched today
+        var calendar = Calendar.current
+        calendar.timeZone = TimeZone(identifier: "EST")!
+        let now = Date()
+        let noonToday = calendar.date(bySettingHour: 12, minute: 0, second: 0, of: now)!
+
+        if let lastFetch = lastFetchDate, lastFetch > noonToday && calendar.isDateInToday(lastFetch) {
+            // Already fetched today after noon
+            return
+        }
+        
+        if now < noonToday && lastFetchDate != nil && calendar.isDateInToday(lastFetchDate!) {
+            // It's before noon, but we already fetched today
             return
         }
 
@@ -44,7 +52,7 @@ class MortgageRateFetcher: ObservableObject {
     }
 
     func parse(html: String) {
-        self.rates.removeAll()
+        var newRates: [MortgageRate] = []
         do {
             let doc: Document = try SwiftSoup.parse(html)
             let rateTables = try doc.select("div.ratesTable")
@@ -61,7 +69,7 @@ class MortgageRateFetcher: ObservableObject {
                             let apr = try tds[2].text()
 
                             let rate = MortgageRate(loanType: loanType, interestRate: interestRate, discountPoints: discountPoints, apr: apr)
-                            self.rates.append(rate)
+                            newRates.append(rate)
 
                             let record = RateRecord(date: Date(), loanType: loanType, interestRate: interestRate, apr: apr)
                             modelContext?.insert(record)
@@ -69,6 +77,7 @@ class MortgageRateFetcher: ObservableObject {
                     }
                 }
             }
+            self.rates = newRates
         } catch Exception.Error(let type, let message) {
             print("Message: \(message) Type: \(type)")
         } catch {
