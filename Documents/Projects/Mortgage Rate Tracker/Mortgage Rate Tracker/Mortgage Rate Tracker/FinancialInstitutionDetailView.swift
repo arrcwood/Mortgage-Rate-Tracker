@@ -6,7 +6,7 @@ struct FinancialInstitutionDetailView: View {
 
     var body: some View {
         List {
-            Text("This is the detail view for \(institution.name)")
+            
         }
         .navigationTitle(institution.name)
     }
