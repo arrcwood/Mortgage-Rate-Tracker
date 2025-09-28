@@ -5,21 +5,27 @@ struct BankRatesView: View {
     @StateObject private var rateFetcher = BankRateFetcher()
 
     private var banksWithSelectedTypes: [FinancialInstitution] {
-        return settingsViewModel.financialInstitutions.filter { institution in
-            !institution.selectedMortgageTypes.isEmpty &&
-            (settingsViewModel.selectedMortgageTypeFilter == nil ||
-             institution.mortgageTypes.contains(settingsViewModel.selectedMortgageTypeFilter!))
+        if let filter = settingsViewModel.selectedMortgageTypeFilter {
+            // When a mortgage type filter is selected, show all banks that offer that type
+            return settingsViewModel.financialInstitutions.filter { institution in
+                institution.mortgageTypes.contains(filter)
+            }
+        } else {
+            // When no filter is selected, show banks with selected mortgage types
+            return settingsViewModel.financialInstitutions.filter { institution in
+                !institution.selectedMortgageTypes.isEmpty
+            }
         }
     }
 
     private func getFilteredMortgageTypes(for institution: FinancialInstitution) -> [String] {
-        let selectedTypes = institution.mortgageTypes.filter { institution.selectedMortgageTypes.contains($0) }
-
         if let filter = settingsViewModel.selectedMortgageTypeFilter {
-            return selectedTypes.filter { $0 == filter }
+            // When filtering, show only the filtered type (regardless of user selection)
+            return institution.mortgageTypes.contains(filter) ? [filter] : []
+        } else {
+            // When not filtering, show only user-selected types
+            return institution.mortgageTypes.filter { institution.selectedMortgageTypes.contains($0) }
         }
-
-        return selectedTypes
     }
 
     var body: some View {
