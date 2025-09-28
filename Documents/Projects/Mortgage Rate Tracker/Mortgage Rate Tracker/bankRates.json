@@ -1,0 +1,255 @@
+{
+    "banks": [
+        {
+            "name": "Bank of America",
+            "url": "https://www.bankofamerica.com/mortgage/mortgage-rates/",
+            "mortgageTypes": [
+                "30-year fixed",
+                "20-year fixed",
+                "15-year fixed",
+                "10-year/6-month ARM variable",
+                "7-year/6-month ARM variable",
+                "5-year/6-month ARM variable"
+            ],
+            "fields": [
+                {
+                    "name": "interestRate",
+                    "label": "Interest Rate"
+                },
+                {
+                    "name": "apr",
+                    "label": "APR"
+                },
+                {
+                    "name": "points",
+                    "label": "Points"
+                }
+            ]
+        },
+        {
+            "name": "Charles Schwab",
+            "url": "https://www.schwab.com/mortgages/mortgage-rates",
+            "mortgageTypes": [
+                "5-year ARM IAP-eligible Jumbo",
+                "7-year ARM IAP-eligible Jumbo",
+                "10-year ARM IAP-eligible Jumbo",
+                "5-year ARM interest only IAP-eligible Jumbo",
+                "7-year ARM interest only IAP-eligible Jumbo",
+                "10-year ARM interest only IAP-eligible Jumbo",
+                "15-year fixed IAP-eligible Jumbo",
+                "30-year fixed IAP-eligible Jumbo",
+                "5-year ARM Conforming Jumbo",
+                "7-year ARM Conforming Jumbo",
+                "10-year ARM Conforming Jumbo",
+                "5-year ARM interest only Conforming Jumbo",
+                "7-year ARM interest only Conforming Jumbo",
+                "10-year ARM interest only Conforming Jumbo",
+                "10-year Fixed non-IAP-eligible Conforming Jumbo",
+                "15-year Fixed non-IAP-eligible Conforming Jumbo",
+                "20-year Fixed non-IAP-eligible Conforming Jumbo",
+                "25-year Fixed non-IAP-eligible Conforming Jumbo",
+                "30-year Fixed non-IAP-eligible Conforming Jumbo"
+            ],
+            "fields": [
+                {
+                    "name": "interestRate",
+                    "label": "Interest Rate"
+                },
+                {
+                    "name": "apr",
+                    "label": "APR"
+                },
+                {
+                    "name": "points",
+                    "label": "Points"
+                }
+            ]
+        },
+        {
+            "name": "Chase",
+            "url": "https://www.chase.com/personal/mortgage/mortgage-rates",
+            "mortgageTypes": [
+                "30-year fixed",
+                "30-year FHA",
+                "15-year fixed",
+                "7/6-month ARM",
+                "5/6-month ARM",
+                "30-year jumbo",
+                "10/6 interest only jumbo ARM"
+            ],
+            "fields": [
+                {
+                    "name": "interestRate",
+                    "label": "Interest Rate"
+                },
+                {
+                    "name": "apr",
+                    "label": "APR"
+                }
+            ]
+        },
+        {
+            "name": "Citi",
+            "url": "https://www.citi.com/mortgage/purchase-rates",
+            "mortgageTypes": [
+                "30-year fixed",
+                "15-year fixed"
+            ],
+            "fields": [
+                {
+                    "name": "interestRate",
+                    "label": "Interest Rate"
+                },
+                {
+                    "name": "apr",
+                    "label": "APR"
+                },
+                {
+                    "name": "points",
+                    "label": "Points"
+                }
+            ]
+        },
+        {
+            "name": "HSBC USA",
+            "url": "https://www.us.hsbc.com/home-loans/products/mortgage-rates/",
+            "mortgageTypes": [
+                "30-year conforming fixed",
+                "15-year conforming fixed",
+                "30-year jumbo fixed",
+                "10/6 jumbo ARM",
+                "7/6 jumbo ARM",
+                "5/6 jumbo ARM"
+            ],
+            "fields": [
+                {
+                    "name": "interestRate",
+                    "label": "Interest Rate"
+                },
+                {
+                    "name": "apr",
+                    "label": "APR"
+                }
+            ]
+        },
+        {
+            "name": "Institution for Savings",
+            "url": "https://www.institutionforsavings.com/rates/residential-loans",
+            "mortgageTypes": [
+                "30-year first-time/affordable homebuyer fixed",
+                "30-year fixed",
+                "30-year fixed",
+                "20-year fixed",
+                "15-year fixed",
+                "10-year fixed",
+                "5/1 ARM",
+                "7/1 ARM"
+            ],
+            "fields": [
+                {
+                    "name": "interestRate",
+                    "label": "Interest Rate"
+                },
+                {
+                    "name": "apr",
+                    "label": "APR"
+                },
+                {
+                    "name": "points",
+                    "label": "Points"
+                }
+            ]
+        },
+        {
+            "name": "Navy Federal Credit Union",
+            "url": "https://www.navyfederal.org/loans-cards/mortgage/mortgage-rates.html",
+            "mortgageTypes": [
+                "30-year VA",
+                "15-year VA",
+                "30-year jumbo conventional fixed",
+                "30-year conventional fixed",
+                "15-year jumbo conventional fixed",
+                "15-year conventional fixed",
+                "30-year jumbo homebuyer's choice",
+                "30-year homebuyer's choice",
+                "30-year jumbo military choice",
+                "30-year military choice",
+                "3/5 conforming ARM",
+                "3/5 jumbo ARM",
+                "5/5 conforming ARM",
+                "5/5 jumbo ARM"
+            ],
+            "fields": [
+                {
+                    "name": "interestRate",
+                    "label": "Interest Rate"
+                },
+                {
+                    "name": "apr",
+                    "label": "APR"
+                },
+                {
+                    "name": "points",
+                    "label": "Points"
+                }
+            ]
+        },
+        {
+            "name": "U.S. Bank",
+            "url": "https://www.usbank.com/home-loans/mortgage/mortgage-rates.html",
+            "mortgageTypes": [
+                "30-year Conventional Fixed",
+                "20-year Conventional Fixed",
+                "15-year Conventional Fixed",
+                "10-year Conventional Fixed",
+                "10/6 Conforming ARM",
+                "7/6 Conforming ARM",
+                "10/1-year Jumbo ARM",
+                "7/1-year Jumbo ARM",
+                "5/1-year Jumbo ARM",
+                "30-year FHA",
+                "30-year VA",
+                "30-year Jumbo",
+                "20-year Jumbo",
+                "15-year Jumbo"
+            ],
+            "fields": [
+                {
+                    "name": "interestRate",
+                    "label": "Interest Rate"
+                },
+                {
+                    "name": "apr",
+                    "label": "APR"
+                },
+                {
+                    "name": "points",
+                    "label": "Points"
+                }
+            ]
+        },
+        {
+            "name": "Wells Fargo",
+            "url": "https://www.wellsfargo.com/mortgage/rates/",
+            "mortgageTypes": [
+                "30-year Fixed",
+                "30-year Fixed VA",
+                "15-year Fixed"
+            ],
+            "fields": [
+                {
+                    "name": "interestRate",
+                    "label": "Interest Rate"
+                },
+                {
+                    "name": "apr",
+                    "label": "APR"
+                },
+                {
+                    "name": "points",
+                    "label": "Points"
+                }
+            ]
+        }
+    ]
+}

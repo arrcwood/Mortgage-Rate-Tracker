@@ -1,0 +1,431 @@
+import Foundation
+import WebKit
+import SwiftUI
+import Combine
+
+class WebViewRateFetcher: NSObject, ObservableObject {
+    private var webView: WKWebView?
+    private var completion: ((Result<[BankRate], Error>) -> Void)?
+    private var currentInstitution: FinancialInstitution?
+    private var currentParameters: LoanParameters?
+
+    override init() {
+        super.init()
+        setupWebView()
+    }
+
+    private func setupWebView() {
+        let configuration = WKWebViewConfiguration()
+        configuration.defaultWebpagePreferences.allowsContentJavaScript = true
+
+        webView = WKWebView(frame: .zero, configuration: configuration)
+        webView?.navigationDelegate = self
+    }
+
+    func fetchRates(for institution: FinancialInstitution, parameters: LoanParameters) -> Future<[BankRate], Error> {
+        return Future { [weak self] promise in
+            guard let self = self else {
+                promise(.failure(URLError(.unknown)))
+                return
+            }
+
+            self.currentInstitution = institution
+            self.currentParameters = parameters
+            self.completion = promise
+
+            guard let url = URL(string: institution.url) else {
+                promise(.failure(URLError(.badURL)))
+                return
+            }
+
+            print("WebView loading Bank of America page: \(url)")
+            let request = URLRequest(url: url)
+            self.webView?.load(request)
+        }
+    }
+
+    private func fillFormAndExtractRates() {
+        guard let institution = currentInstitution,
+              let parameters = currentParameters else {
+            completion?(.failure(URLError(.unknown)))
+            return
+        }
+
+        print("Filling form with: Purchase=\(parameters.purchasePrice), Down=\(parameters.downPayment), ZIP=\(parameters.zipCode)")
+
+        // JavaScript to first check what elements exist, then fill the form
+        let debugAndFillJS = """
+        (function() {
+            console.log('Starting form debugging and fill process...');
+
+            // First, let's see what input fields exist on the page
+            const allInputs = document.querySelectorAll('input');
+            console.log('Found', allInputs.length, 'input elements');
+
+            // Log first 10 input elements with their IDs, names, and values
+            for (let i = 0; i < Math.min(10, allInputs.length); i++) {
+                const input = allInputs[i];
+                console.log('Input', i, '- id:', input.id, 'name:', input.name, 'value:', input.value, 'type:', input.type);
+            }
+
+            // Look for elements that might be the fields we want
+            const purchaseFields = document.querySelectorAll('[id*="purchase"], [name*="purchase"], [placeholder*="purchase"]');
+            const downFields = document.querySelectorAll('[id*="down"], [name*="down"], [placeholder*="down"]');
+            const zipFields = document.querySelectorAll('[id*="zip"], [name*="zip"], [placeholder*="zip"]');
+
+            console.log('Purchase-related fields:', purchaseFields.length);
+            console.log('Down-payment-related fields:', downFields.length);
+            console.log('ZIP-related fields:', zipFields.length);
+
+            // Function to trigger change events
+            function triggerChange(element) {
+                const events = ['input', 'change', 'blur'];
+                events.forEach(eventType => {
+                    const event = new Event(eventType, { bubbles: true });
+                    element.dispatchEvent(event);
+                });
+            }
+
+            // Try to fill all fields
+            try {
+                let filledCount = 0;
+
+                // Try specific IDs first
+                const purchaseField = document.querySelector('#purchase-price-input-medium');
+                if (purchaseField) {
+                    purchaseField.value = '\(parameters.purchasePrice)';
+                    purchaseField.focus();
+                    triggerChange(purchaseField);
+                    console.log('Filled purchase price:', purchaseField.value);
+                    filledCount++;
+                } else if (purchaseFields.length > 0) {
+                    // Try first purchase-related field
+                    purchaseFields[0].value = '\(parameters.purchasePrice)';
+                    purchaseFields[0].focus();
+                    triggerChange(purchaseFields[0]);
+                    console.log('Filled purchase price (alt):', purchaseFields[0].value);
+                    filledCount++;
+                } else {
+                    console.log('No purchase field found');
+                }
+
+                const downField = document.querySelector('#down-payment-input-medium');
+                if (downField) {
+                    downField.value = '\(parameters.downPayment)';
+                    downField.focus();
+                    triggerChange(downField);
+                    console.log('Filled down payment:', downField.value);
+                    filledCount++;
+                } else if (downFields.length > 0) {
+                    downFields[0].value = '\(parameters.downPayment)';
+                    downFields[0].focus();
+                    triggerChange(downFields[0]);
+                    console.log('Filled down payment (alt):', downFields[0].value);
+                    filledCount++;
+                } else {
+                    console.log('No down payment field found');
+                }
+
+                const zipField = document.querySelector('#zip-code-input-medium');
+                if (zipField) {
+                    zipField.value = '\(parameters.zipCode)';
+                    zipField.focus();
+                    triggerChange(zipField);
+                    console.log('Filled ZIP code:', zipField.value);
+                    filledCount++;
+                } else if (zipFields.length > 0) {
+                    zipFields[0].value = '\(parameters.zipCode)';
+                    zipFields[0].focus();
+                    triggerChange(zipFields[0]);
+                    console.log('Filled ZIP code (alt):', zipFields[0].value);
+                    filledCount++;
+                } else {
+                    console.log('No ZIP field found');
+                }
+
+                // Try to click update button
+                const updateButton = document.querySelector('#update-button-medium, [id*="update"], button:contains("Update"), button:contains("Calculate")');
+                if (updateButton) {
+                    updateButton.click();
+                    console.log('Clicked update button');
+                } else {
+                    console.log('Update button not found');
+                }
+
+                return 'FILLED_' + filledCount + '_FIELDS';
+            } catch (error) {
+                console.error('Error filling form:', error);
+                return 'ERROR: ' + error.message;
+            }
+        })();
+        """
+
+        webView?.evaluateJavaScript(debugAndFillJS) { [weak self] result, error in
+            if let error = error {
+                print("JavaScript error: \(error)")
+                self?.completion?(.failure(error))
+                return
+            }
+
+            if let result = result as? String {
+                print("Form fill result: \(result)")
+
+                if result.hasPrefix("FILLED_") {
+                    // Wait a moment then extract the rates
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                        self?.extractRatesFromWebView()
+                    }
+                } else {
+                    print("Form filling issue: \(result)")
+                    // Still try to extract rates in case the page has default data
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        self?.extractRatesFromWebView()
+                    }
+                }
+            } else {
+                print("Unexpected result type: \(type(of: result))")
+                // Still try to extract rates
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    self?.extractRatesFromWebView()
+                }
+            }
+        }
+    }
+
+    private func extractRatesFromWebView() {
+        guard let institution = currentInstitution else {
+            completion?(.failure(URLError(.unknown)))
+            return
+        }
+
+        let extractionJavaScript = """
+        (function() {
+            console.log('Starting rate extraction...');
+
+            const rates = [];
+
+            // Look for rate rows using multiple selectors
+            const selectors = [
+                'div.row[data-product-name]',
+                '[data-product-name]',
+                '.row[data-product-name]',
+                '.mortgage-rate-row',
+                '.rate-row',
+                'tr[data-product-name]'
+            ];
+
+            let rows = [];
+            for (const selector of selectors) {
+                rows = document.querySelectorAll(selector);
+                if (rows.length > 0) {
+                    console.log('Found', rows.length, 'rows with selector:', selector);
+                    break;
+                }
+            }
+
+            if (rows.length === 0) {
+                console.log('No rate rows found, trying alternative approach...');
+                // Look for table rows that might contain rates
+                const tableRows = document.querySelectorAll('tr');
+                console.log('Found', tableRows.length, 'table rows total');
+
+                // Look for any elements containing percentage signs
+                const percentElements = document.querySelectorAll('*');
+                let foundRates = [];
+                let ratePatterns = [];
+                percentElements.forEach(el => {
+                    if (el.textContent && el.textContent.includes('%')) {
+                        const text = el.textContent.trim();
+                        if (text.match(/\\d+\\.\\d+%/)) {
+                            foundRates.push(text);
+                            // Try to find parent elements that might contain full rate info
+                            let parent = el.parentElement;
+                            while (parent && parent !== document.body) {
+                                if (parent.textContent.includes('Fixed') || parent.textContent.includes('ARM')) {
+                                    ratePatterns.push({
+                                        rate: text,
+                                        context: parent.textContent.trim().substring(0, 100)
+                                    });
+                                    break;
+                                }
+                                parent = parent.parentElement;
+                            }
+                        }
+                    }
+                });
+                console.log('Found elements with percentages:', foundRates.slice(0, 10));
+                console.log('Found rate patterns:', ratePatterns.slice(0, 5));
+                return { rates: [], debug: { percentages: foundRates.slice(0, 10), patterns: ratePatterns.slice(0, 5) } };
+            }
+
+            rows.forEach((row, index) => {
+                try {
+                    const productName = row.getAttribute('data-product-name') || 'Unknown';
+                    console.log('Processing row', index, 'product:', productName);
+
+                    // Extract rate data with more flexible selectors
+                    const rateSelectors = [
+                        'p.partial-rate span.update-partial',
+                        '.partial-rate .update-partial',
+                        '[class*="rate"] [class*="update"]',
+                        '.rate-value',
+                        '.interest-rate'
+                    ];
+
+                    const aprSelectors = [
+                        'p.partial-apr span.update-partial',
+                        '.partial-apr .update-partial',
+                        '[class*="apr"] [class*="update"]',
+                        '.apr-value'
+                    ];
+
+                    const pointsSelectors = [
+                        'p.partial-points span.update-partial',
+                        '.partial-points .update-partial',
+                        '[class*="points"] [class*="update"]',
+                        '.points-value'
+                    ];
+
+                    let rate = 'N/A', apr = 'N/A', points = 'N/A';
+
+                    for (const selector of rateSelectors) {
+                        const element = row.querySelector(selector);
+                        if (element && element.textContent.trim()) {
+                            rate = element.textContent.trim();
+                            break;
+                        }
+                    }
+
+                    for (const selector of aprSelectors) {
+                        const element = row.querySelector(selector);
+                        if (element && element.textContent.trim()) {
+                            apr = element.textContent.trim();
+                            break;
+                        }
+                    }
+
+                    for (const selector of pointsSelectors) {
+                        const element = row.querySelector(selector);
+                        if (element && element.textContent.trim()) {
+                            points = element.textContent.trim();
+                            break;
+                        }
+                    }
+
+                    console.log('Extracted:', { productName, rate, apr, points });
+
+                    if (rate !== 'N/A' || apr !== 'N/A' || points !== 'N/A') {
+                        rates.push({
+                            productName: productName,
+                            interestRate: rate,
+                            apr: apr,
+                            points: points
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error processing row:', error);
+                }
+            });
+
+            console.log('Total rates extracted:', rates.length);
+            return { rates: rates, debug: 'Success' };
+        })();
+        """
+
+        webView?.evaluateJavaScript(extractionJavaScript) { [weak self] result, error in
+            if let error = error {
+                print("Rate extraction error: \(error)")
+                self?.completion?(.failure(error))
+                return
+            }
+
+            guard let resultDict = result as? [String: Any] else {
+                print("Failed to parse extraction result as dictionary: \(String(describing: result))")
+                self?.completion?(.failure(URLError(.cannotParseResponse)))
+                return
+            }
+
+            if let debugInfo = resultDict["debug"] {
+                print("Rate extraction debug info: \(debugInfo)")
+            }
+
+            guard let ratesData = resultDict["rates"] as? [[String: String]] else {
+                print("No rates array found in result")
+                // If no rates found, create empty array but don't fail - may be a page loading issue
+                self?.completion?(.success([]))
+                return
+            }
+
+            print("Extracted \(ratesData.count) rates from WebView")
+
+            var bankRates: [BankRate] = []
+
+            for rateData in ratesData {
+                guard let productName = rateData["productName"],
+                      let interestRate = rateData["interestRate"],
+                      let apr = rateData["apr"],
+                      let points = rateData["points"] else {
+                    print("Skipping incomplete rate data: \(rateData)")
+                    continue
+                }
+
+                let mappedMortgageType = self?.mapBankOfAmericaProductName(productName) ?? productName
+
+                // Only include if the user selected this mortgage type
+                if let institution = self?.currentInstitution,
+                   institution.selectedMortgageTypes.contains(mappedMortgageType) {
+                    let bankRate = BankRate(
+                        bankName: institution.name,
+                        mortgageType: mappedMortgageType,
+                        interestRate: interestRate,
+                        apr: apr,
+                        points: points,
+                        fetchDate: Date()
+                    )
+                    bankRates.append(bankRate)
+                    print("Added rate for \(mappedMortgageType): \(interestRate)")
+                } else {
+                    print("Skipping unselected mortgage type: \(mappedMortgageType)")
+                }
+            }
+
+            print("Filtered to \(bankRates.count) selected rates")
+            self?.completion?(.success(bankRates))
+        }
+    }
+
+    private func mapBankOfAmericaProductName(_ productName: String) -> String {
+        switch productName {
+        case "Fixed 30 Years":
+            return "30-year fixed"
+        case "Fixed 20 Years":
+            return "20-year fixed"
+        case "Fixed 15 Years":
+            return "15-year fixed"
+        case "ARM Fixed First 10 Years, Then Adjusts Every 6 Months":
+            return "10-year/6-month ARM variable"
+        case "ARM Fixed First 7 Years, Then Adjusts Every 6 Months":
+            return "7-year/6-month ARM variable"
+        case "ARM Fixed First 5 Years, Then Adjusts Every 6 Months":
+            return "5-year/6-month ARM variable"
+        default:
+            return productName
+        }
+    }
+}
+
+extension WebViewRateFetcher: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        print("WebView finished loading page")
+
+        // Wait a moment for any JavaScript to execute, then fill the form
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.fillFormAndExtractRates()
+        }
+    }
+
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        print("WebView navigation failed: \(error)")
+        completion?(.failure(error))
+    }
+}

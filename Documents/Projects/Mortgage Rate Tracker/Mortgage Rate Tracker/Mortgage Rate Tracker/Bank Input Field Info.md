@@ -1,0 +1,120 @@
+//
+//  Bank Input Field Info.swift
+//  Mortgage Rate Tracker
+//
+//  Created by Robert Wood on 9/27/25.
+//
+
+# Bank of America (Requires website visitor inputs)
+
+## Purchase Price
+
+<input type="text" aria-describedby="purchase-price-input-medium_errorMessage purchase-price-input-medium-hint-text" data-mobile-input-type="text" data-default-input-type="text" data-android-input-type="text" data-mobile-pattern="" data-default-pattern="" data-sparta-input-format="currency" novalidate="true" data-sparta-input-mask="{&quot;greedy&quot;:true,&quot;placeholder&quot;:&quot;&quot;,&quot;clearMaskOnLostFocus&quot;:true,&quot;showMaskOnHover&quot;:false,&quot;showMaskOnFocus&quot;:true,&quot;keepStatic&quot;:true,&quot;jitMasking&quot;:true,&quot;showTooltip&quot;:false,&quot;inputEventOnly&quot;:true,&quot;alias&quot;:&quot;currency&quot;,&quot;prefix&quot;:&quot;&quot;,&quot;allowMinus&quot;:true,&quot;rightAlign&quot;:false,&quot;digitsOptional&quot;:true,&quot;digits&quot;:2}" class="spa-input-text" value="250000" autocomplete="off" data-gis-mask="false" id="purchase-price-input-medium" name="purchase-price-input-medium" data-mask="dollars" data-mask-options="{&quot;digits&quot;:0,&quot;clearMaskOnLostFocus&quot;:false,&quot;allowPlus&quot;:false,&quot;allowMinus&quot;:false}" data-validation-rules="{&quot;change&quot;:{&quot;currency&quot;:{&quot;parameters&quot;:[]},&quot;valueRange&quot;:{&quot;parameters&quot;:[60000,2500000],&quot;errorMessage&quot;:&quot;Enter a purchase price between $60,000 and $2.5 million.&quot;}}}" required="" aria-required="true" data-required-error-message="Enter a purchase price between $60,000 and $2.5 million." style="padding-left: 27px;" data-sparta-input-format-initialized="true" data-blur="true">
+
+## Down Payment
+
+<input type="text" aria-describedby="down-payment-input-medium_errorMessage down-payment-input-medium-hint-text" data-mobile-input-type="text" data-default-input-type="text" data-android-input-type="text" data-mobile-pattern="" data-default-pattern="" data-sparta-input-format="currency" novalidate="true" data-sparta-input-mask="{&quot;greedy&quot;:true,&quot;placeholder&quot;:&quot;&quot;,&quot;clearMaskOnLostFocus&quot;:true,&quot;showMaskOnHover&quot;:false,&quot;showMaskOnFocus&quot;:true,&quot;keepStatic&quot;:true,&quot;jitMasking&quot;:true,&quot;showTooltip&quot;:false,&quot;inputEventOnly&quot;:true,&quot;alias&quot;:&quot;currency&quot;,&quot;prefix&quot;:&quot;&quot;,&quot;allowMinus&quot;:true,&quot;rightAlign&quot;:false,&quot;digitsOptional&quot;:true,&quot;digits&quot;:2}" class="spa-input-text" value="50000" autocomplete="off" data-gis-mask="false" id="down-payment-input-medium" name="down-payment-input-medium" data-mask="dollars" data-mask-options="{&quot;digits&quot;:0,&quot;clearMaskOnLostFocus&quot;:false,&quot;allowPlus&quot;:false,&quot;allowMinus&quot;:false}" data-validation-rules="{&quot;change&quot;:{&quot;custom&quot;:[{&quot;fn&quot;:&quot;lessThanPercentageOf&quot;,&quot;parameters&quot;:[&quot;#purchase-price-input-medium&quot;,5],&quot;errorMessage&quot;:&quot;Enter a down payment that is at least 5% of the purchase price.&quot;},{&quot;fn&quot;:&quot;differenceWithinRange&quot;,&quot;parameters&quot;:[&quot;#purchase-price-input-medium&quot;,60000,2000000],&quot;errorMessage&quot;:&quot;Enter a loan amount between $60,000 and $2 million.&quot;},{&quot;fn&quot;:&quot;lessThanField&quot;,&quot;parameters&quot;:[&quot;#purchase-price-input-medium&quot;],&quot;errorMessage&quot;:&quot;Your down payment cannot be greater than your purchase price.&quot;},{&quot;fn&quot;:&quot;withinPercentageOf&quot;,&quot;soft&quot;:true,&quot;parameters&quot;:[&quot;#purchase-price-input-medium&quot;,5,20],&quot;errorMessage&quot;:&quot;Private mortgage insurance may be required for loans with a down payment of less than 20%.&quot;}]}}" required="" aria-required="true" data-required-error-message="Enter a down payment that is at least 5% of the purchase price." style="padding-left: 27px;" data-sparta-input-format-initialized="true" data-blur="true">
+
+## ZIP Code
+
+<input type="text" aria-describedby="zip-code-input-medium_errorMessage zip-code-input-medium-hint-text" pattern="^\d{5}$" data-mobile-input-type="text" data-default-input-type="text" data-android-input-type="text" data-mobile-pattern="^\d{5}$" data-default-pattern="^\d{5}$" data-sparta-input-format="zip" autocomplete="off" inputmode="numeric" novalidate="true" autocorrect="off" data-sparta-input-mask="{&quot;greedy&quot;:true,&quot;placeholder&quot;:&quot;&quot;,&quot;clearMaskOnLostFocus&quot;:true,&quot;showMaskOnHover&quot;:false,&quot;showMaskOnFocus&quot;:true,&quot;keepStatic&quot;:true,&quot;jitMasking&quot;:true,&quot;showTooltip&quot;:false,&quot;inputEventOnly&quot;:true,&quot;mask&quot;:&quot;99999&quot;}" class="spa-input-text" value="95464" data-gis-mask="false" id="zip-code-input-medium" name="zip-code-input-medium" data-validation-rules="{&quot;change&quot;:{&quot;zip&quot;:{&quot;parameters&quot;:[],&quot;errorMessage&quot;:&quot;Enter a valid 5-digit ZIP code&quot;}}}" required="" aria-required="true" data-required-error-message="Enter a valid 5-digit ZIP code" data-sparta-input-format-initialized="true" style="" data-blur="true">
+
+
+# Charles Schwab
+5-year ARM IAP-Eligible Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">5.875%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.803%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+7-year ARM IAP-Eligible Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">5.875%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.628%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+10-year ARM IAP-Eligible Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">5.875%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.416%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+5-year ARM Interest Only IAP-Eligible Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.000%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.884%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+7-year ARM Interest Only IAP-Eligible Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.000%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.726%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+10-year ARM Interest Only IAP-Eligible Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.000%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.527%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+15-year fixed IAP-Eligible Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">5.750%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">5.798%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+30-year fixed IAP-Eligible Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.500%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.533%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+5-year ARM Conforming Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.125%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.921%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+7-year ARM Conforming Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.125%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.774%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+10-year ARM Conforming Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.125%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.595%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+5-year ARM Interest Only Conforming Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.375%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">7.041%</td> |<td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+7-year ARM Interest Only Conforming Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.375%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.925%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+10-year ARM Interest Only Conforming Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.375%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.778%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+10-year Fixed Non-IAP-Eligible Conforming Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">5.750%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">5.888%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">0.125</td>
+15-year Fixed Non-IAP-Eligible Conforming Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">5.875%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">5.954%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">--</td>
+20-year Fixed Non-IAP-Eligible Conforming Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">5.990%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.053%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">-0.125</td>
+25-year Fixed Non-IAP-Eligible Conforming Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.375%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.432%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">-0.125</td>
+30-year Fixed Non-IAP-Eligible Conforming Jumbo = <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.375%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">6.425%</td> | <td tabindex="0" class="bcn-table__body-column bcn-table__body-column--horizontal-border bcn-card-body--l">-0.125</td>
+
+
+# Chase (Requires website visitor inputs)
+
+## Purchase Price
+
+
+## Down Payment
+
+
+## ZIP Code
+
+
+# Citi
+30-year Fixed = <td _ngcontent-ng-c3197842443="" colspan="5">6.125%</td> | <td _ngcontent-ng-c3197842443="" colspan="5">6.301%</td> | <td _ngcontent-ng-c3197842443="" colspan="5">0.625</td>
+15-year Fixed = <td _ngcontent-ng-c3197842443="" colspan="5">5.375%</td> | <td _ngcontent-ng-c3197842443="" colspan="5">5.701%</td> | <td _ngcontent-ng-c3197842443="" colspan="5">0.875</td>
+
+
+# HSBS USA
+30-year Conforming Fixed = <td class="cellWhite">6.625%<br></td> | <td class="cellWhite">6.694%<br></td>
+15-year Conforming Fixed = <td>5.750%<br></td> | <td>5.844%<br></td>
+30-year Jumbo Fixed = <td>6.628%<br></td> | <td>6.679%<br></td>
+10/6 Jumbo ARM = <td>6.290%<br></td> | <td>6.703%<br></td>
+7/6 Jumbo ARM = <td>6.170%<br></td> | <td>6.796%<br></td>
+5/6 Jumbo ARM = <td>5.903%<br></td> | <td>6.831%<br></td>
+
+
+# Institution for Savings
+30-year First-Time/Affordable Homebuyer Fixed = <div>6.000%<br></div><td style="width: 14.4397%;">6.040%<br></td> | <td style="width: 17.8879%; vertical-align: middle;">0</td>
+30-year Fixed (2) = <div>5.500%</div><div>5.758%</div><div>2</div>
+30-year Fixed (1) = <div><hr>5.990%</div><div><hr>6.159%</div><div><hr>1</div>
+30-year Fixed (0) = <div>6.250%</div><div><hr>6.325%</div><div>0</div>
+30-year Fixed = 
+20-year Fixed = 
+15-year Fixed = 
+10-year Fixed = 
+5/1 ARM = 
+7/1 ARM = 
+
+
+# Navy Federal Credit Union
+15-year VA = <td data-th="Interest Rates As Low As">4.875%</td> | <td data-th="APR As Low As">5.558%</td> | <td data-th="Discount Points">0.500</td>
+30-year VA = <td data-th="Interest Rates As Low As">5.375%</td> | <td data-th="APR As Low As">5.789%</td> | <td data-th="Discount Points">0.500</td>
+15-year Conventional Fixed = <td data-th="Interest Rates As Low As">5.000%</td> | <td data-th="APR As Low As">5.191%</td> | <td data-th="Discount Points">0.250</td>
+15-year Jumbo Conventional Fixed = <td data-th="Interest Rates As Low As">5.500%</td> | <td data-th="APR As Low As">5.694%</td> | <td data-th="APR As Low As">5.694%</td>
+30-year Conventional Fixed = <td data-th="Interest Rates As Low As">5.750%</td> | <td data-th="APR As Low As">5.889%</td> | <td data-th="Discount Points">0.500</td>
+30-year Jumbo Conventional Fixed = <td data-th="Interest Rates As Low As">6.000%</td> | <td data-th="APR As Low As">6.142%</td> | <td data-th="Discount Points">0.500</td>
+30-year Homebuyer's Choice = <td data-th="Interest Rates As Low As">6.625%</td> | <td data-th="APR As Low As">6.948%</td> | <td data-th="Discount Points">0.500</td>
+30-year Jumbo Homebuyer's Choice = <td data-th="Interest Rates As Low As">7.000%</td> | <td data-th="APR As Low As">7.331%</td> | <td data-th="Discount Points">0.500</td>
+30-year Military Choice = <td data-th="Interest Rates As Low As">6.500%</td> | <td data-th="APR As Low As">6.821%</td> | <td data-th="Discount Points">0.500</td>
+30-year Jumbo Military Choice = <td data-th="Interest Rates As Low As">6.875%</td> | <td data-th="APR As Low As">7.203%</td> | <td data-th="Discount Points">0.500</td>
+3/5 Conforming ARM = <td data-th="Interest Rates As Low As">5.000%</td> | <td data-th="APR As Low As">5.597%</td> | <td data-th="Discount Points">0.250</td>
+3/5 Jumbo ARM = <td data-th="Interest Rates As Low As">5.000%</td> | <td data-th="APR As Low As">5.597%</td> | <td data-th="Discount Points">0.250</td>
+5/5 Conforming ARM = <td data-th="Interest Rates As Low As">5.250%</td> | <td data-th="APR As Low As">5.607%</td> | <td data-th="Discount Points">0.250</td>
+5/5 Jumbo ARM = <td data-th="Interest Rates As Low As">5.250%</td> | <td data-th="APR As Low As">5.607%</td> | <td data-th="Discount Points">0.250</td>
+
+
+# U.S. Bank
+30-year Conventional Fixed = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateConventional30" data-column="rate" data-product-term="30">6.125%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprConventional30" data-column="apr" data-product-term="30">6.274%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsConventional30" data-column="points" data-product-term="30">0.702</div>
+20-year Conventional Fixed = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateConventional20" data-column="rate" data-product-term="20">5.750%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprConventional20" data-column="apr" data-product-term="20">5.958%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsConventional20" data-column="points" data-product-term="20">0.805</div>
+15-year Conventional Fixed = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateConventional15" data-column="rate" data-product-term="15">5.500%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprConventional15" data-column="apr" data-product-term="15">5.755%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsConventional15" data-column="points" data-product-term="15">0.773</div>
+10-year Conventional Fixed = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateConventional10" data-column="rate" data-product-term="10">5.375%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprConventional10" data-column="apr" data-product-term="10">5.762%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsConventional10" data-column="points" data-product-term="10">0.889</div>
+10/6 Conforming ARM = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateSofrArm10" data-column="rate" data-product-term="10">6.250%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprSofrArm10" data-column="apr" data-product-term="10">6.709%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsSofrArm10" data-column="points" data-product-term="10">0.854</div>
+7/6 Conforming ARM = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateSofrArm7" data-column="rate" data-product-term="7">6.000%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprSofrArm7" data-column="apr" data-product-term="7">6.699%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsSofrArm7" data-column="points" data-product-term="7">0.779</div>
+10/1-year Jumbo ARM = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateJumboArm10" data-column="rate" data-product-term="10">6.125%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprJumboArm10" data-column="apr" data-product-term="10">6.372%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsJumboArm10" data-column="points" data-product-term="10">0.835</div>
+7/1-year Jumbo ARM = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateJumboArm7" data-column="rate" data-product-term="7">6.000%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprJumboArm7" data-column="apr" data-product-term="7">6.342%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsJumboArm7" data-column="points" data-product-term="7">0.815</div>
+5/1-year Jumbo ARM = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateJumboArm5" data-column="rate" data-product-term="5">5.875%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprJumboArm5" data-column="apr" data-product-term="5">6.339%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsJumboArm5" data-column="points" data-product-term="5">0.835</div>
+30-year FHA = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateFha30" data-column="rate" data-product-term="30">6.125%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprFha30" data-column="apr" data-product-term="30">7.016%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsFha30" data-column="points" data-product-term="30">0.886</div>
+30-year VA = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateVa30" data-column="rate" data-product-term="30">5.990%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprVa30" data-column="apr" data-product-term="30">6.368%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsVa30" data-column="points" data-product-term="30">0.962</div>
+30-year Jumbo = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateJumbo30" data-column="rate" data-product-term="30">6.625%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprJumbo30" data-column="apr" data-product-term="30">6.788%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsJumbo30" data-column="points" data-product-term="30">0.800</div>
+20-year Jumbo = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateJumbo20" data-column="rate" data-product-term="20">6.500%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprJumbo20" data-column="apr" data-product-term="20">6.720%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsJumbo20" data-column="points" data-product-term="20">0.850</div>
+15-year Jumbo = <div role="cell" class="mrt-body-cell heading medium rate percent-cell dynamic-value rateJumbo15" data-column="rate" data-product-term="15">6.375%</div><div role="cell" class="mrt-body-cell heading medium apr percent-cell dynamic-value aprJumbo15" data-column="apr" data-product-term="15">6.633%</div><div role="cell" class="mrt-body-cell heading medium points points-cell dynamic-value pointsJumbo15" data-column="points" data-product-term="15">0.755</div>
+
+
+# Wells Fargo
+15-year Fixed = <div class="index__interest___HVlqg">5.375%</div> | <div class="index__interest___HVlqg">5.639%</div> | <div class="index__interest___HVlqg">$3,200</div>
+30-year Fixed VA = <div class="index__interest___HVlqg">5.625%</div> | <div class="index__interest___HVlqg">5.829%</div> | <div class="index__interest___HVlqg">$2,430</div>
+30-year Fixed = <div class="index__interest___HVlqg">6.375%</div> | <div class="index__interest___HVlqg">6.540%</div> | <div class="index__interest___HVlqg">$3,200</div>

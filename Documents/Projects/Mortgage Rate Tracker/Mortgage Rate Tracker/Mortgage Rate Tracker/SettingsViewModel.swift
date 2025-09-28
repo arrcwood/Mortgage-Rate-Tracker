@@ -4,83 +4,137 @@ import Combine
 
 class SettingsViewModel: ObservableObject {
     @Published var financialInstitutions: [FinancialInstitution] = []
-
-    private let json_data = """
-    [
-        {
-            "name": "Bank of America",
-            "website": [
-                "https://www.bankofamerica.com/mortgage/home-mortgage/"
-            ]
-        },
-        {
-            "name": "Charles Schwab",
-            "website": [
-                "https://www.schwab.com/mortgages/mortgage-rates"
-            ]
-        },
-        {
-            "name": "Chase",
-            "website": [
-                "https://www.chase.com/personal/mortgage/mortgage-rates"
-            ]
-        },
-        {
-            "name": "Citi",
-            "website": [
-                "https://www.citi.com/mortgage/purchase-rates"
-            ]
-        },
-        {
-            "name": "HSBC USA",
-            "website": [
-                "https://www.us.hsbc.com/home-loans/products/mortgage-rates/"
-            ]
-        },
-        {
-            "name": "Institution for Savings",
-            "website": [
-                "https://www.institutionforsavings.com/rates/residential-loans"
-            ]
-        },
-        {
-            "name": "Navy Federal Credit Union",
-            "website": [
-                "https://www.navyfederal.org/loans-cards/mortgage/mortgage-rates.html"
-            ]
-        },
-        {
-            "name": "Regions Bank",
-            "website": [
-                "https://www.regions.com/personal-banking/home-loans"
-            ]
-        },
-        {
-            "name": "U.S. Bank",
-            "website": [
-                "https://www.usbank.com/home-loans/mortgage/mortgage-rates.html"
-            ]
-        },
-        {
-            "name": "Wells Fargo",
-            "website": [
-                "https://www.wellsfargo.com/mortgage/rates/"
-            ]
-        }
-    ]
-    """
+    @Published var expandedBanks: Set<UUID> = []
+    @Published var loanParameters = LoanParameters.defaultParameters
+    @Published var showingParametersSheet = false
 
     init() {
         loadFinancialInstitutions()
+        loadSelectedMortgageTypes()
+        loadLoanParameters()
     }
 
     func loadFinancialInstitutions() {
-        let data = Data(json_data.utf8)
-        do {
-            let decoder = JSONDecoder()
-            financialInstitutions = try decoder.decode([FinancialInstitution].self, from: data)
-        } catch {
-            print("Error decoding financialInstitutions.json: \(error)")
+        guard let url = Bundle.main.url(forResource: "bankRates", withExtension: "json") else {
+            print("Could not find bankRates.json file")
+            return
         }
+
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let bankRatesData = try decoder.decode(BankRatesData.self, from: data)
+            financialInstitutions = bankRatesData.banks
+        } catch {
+            print("Error decoding bankRates.json: \(error)")
+        }
+    }
+
+    func refreshData() {
+        loadFinancialInstitutions()
+        loadSelectedMortgageTypes()
+    }
+
+    func clearCachedData() {
+        UserDefaults.standard.removeObject(forKey: "selectedMortgageTypes")
+        financialInstitutions = []
+        loadFinancialInstitutions()
+        loadSelectedMortgageTypes()
+    }
+
+    func toggleBankExpansion(_ bankId: UUID) {
+        if expandedBanks.contains(bankId) {
+            expandedBanks.remove(bankId)
+        } else {
+            expandedBanks.insert(bankId)
+        }
+    }
+
+    func toggleMortgageTypeSelection(for bankId: UUID, mortgageType: String) {
+        if let index = financialInstitutions.firstIndex(where: { $0.id == bankId }) {
+            if financialInstitutions[index].selectedMortgageTypes.contains(mortgageType) {
+                financialInstitutions[index].selectedMortgageTypes.remove(mortgageType)
+            } else {
+                financialInstitutions[index].selectedMortgageTypes.insert(mortgageType)
+            }
+            saveSelectedMortgageTypes()
+        }
+    }
+
+    func isMortgageTypeSelected(for bankId: UUID, mortgageType: String) -> Bool {
+        guard let bank = financialInstitutions.first(where: { $0.id == bankId }) else {
+            return false
+        }
+        return bank.selectedMortgageTypes.contains(mortgageType)
+    }
+
+    func selectAllMortgageTypes(for bankId: UUID) {
+        if let index = financialInstitutions.firstIndex(where: { $0.id == bankId }) {
+            financialInstitutions[index].selectedMortgageTypes = Set(financialInstitutions[index].mortgageTypes)
+            saveSelectedMortgageTypes()
+        }
+    }
+
+    func deselectAllMortgageTypes(for bankId: UUID) {
+        if let index = financialInstitutions.firstIndex(where: { $0.id == bankId }) {
+            financialInstitutions[index].selectedMortgageTypes.removeAll()
+            saveSelectedMortgageTypes()
+        }
+    }
+
+    func areAllMortgageTypesSelected(for bankId: UUID) -> Bool {
+        guard let bank = financialInstitutions.first(where: { $0.id == bankId }) else {
+            return false
+        }
+        return bank.selectedMortgageTypes.count == bank.mortgageTypes.count
+    }
+
+    func areNoMortgageTypesSelected(for bankId: UUID) -> Bool {
+        guard let bank = financialInstitutions.first(where: { $0.id == bankId }) else {
+            return true
+        }
+        return bank.selectedMortgageTypes.isEmpty
+    }
+
+    private func saveSelectedMortgageTypes() {
+        var selections: [String: [String]] = [:]
+        for institution in financialInstitutions {
+            selections[institution.name] = Array(institution.selectedMortgageTypes)
+        }
+        UserDefaults.standard.set(selections, forKey: "selectedMortgageTypes")
+    }
+
+    private func loadSelectedMortgageTypes() {
+        guard let selections = UserDefaults.standard.dictionary(forKey: "selectedMortgageTypes") as? [String: [String]] else {
+            return
+        }
+
+        for i in 0..<financialInstitutions.count {
+            if let bankSelections = selections[financialInstitutions[i].name] {
+                financialInstitutions[i].selectedMortgageTypes = Set(bankSelections)
+            }
+        }
+    }
+
+    func updateLoanParameters(_ newParameters: LoanParameters) {
+        print("Updating loan parameters: \(newParameters)")
+        loanParameters = newParameters
+        saveLoanParameters()
+        print("Parameters updated and saved")
+    }
+
+    private func saveLoanParameters() {
+        let encoder = JSONEncoder()
+        if let data = try? encoder.encode(loanParameters) {
+            UserDefaults.standard.set(data, forKey: "loanParameters")
+        }
+    }
+
+    private func loadLoanParameters() {
+        guard let data = UserDefaults.standard.data(forKey: "loanParameters"),
+              let savedParameters = try? JSONDecoder().decode(LoanParameters.self, from: data) else {
+            return
+        }
+        loanParameters = savedParameters
     }
 }

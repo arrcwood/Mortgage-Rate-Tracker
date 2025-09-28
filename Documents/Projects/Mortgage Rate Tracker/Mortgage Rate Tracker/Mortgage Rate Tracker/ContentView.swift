@@ -7,6 +7,7 @@ struct ContentView: View {
     @Query(sort: \RateRecord.date, order: .reverse) private var rateRecords: [RateRecord]
     @Environment(\.modelContext) private var modelContext
     @State private var selectedTab = 0
+    @StateObject private var settingsViewModel = SettingsViewModel()
 
     private var groupedRecords: [Date: [RateRecord]] {
         Dictionary(grouping: rateRecords) { record in
@@ -79,13 +80,19 @@ struct ContentView: View {
                 }
                 .tag(0)
 
-                SettingsView()
+                BankRatesView(settingsViewModel: settingsViewModel)
+                    .tabItem {
+                        Label("Bank Rates", systemImage: "building.columns")
+                    }
+                    .tag(1)
+
+                SettingsView(settingsViewModel: settingsViewModel)
                     .tabItem {
                         Label("Settings", systemImage: "gear")
                     }
-                    .tag(1)
+                    .tag(2)
             }
-            .navigationTitle(selectedTab == 0 ? "" : "Settings")
+            .navigationTitle(selectedTab == 0 ? "" : (selectedTab == 1 ? "" : "Settings"))
             .navigationBarTitleDisplayMode(.inline)
         }
     }
