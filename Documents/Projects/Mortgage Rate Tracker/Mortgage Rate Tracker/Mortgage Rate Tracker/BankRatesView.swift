@@ -5,7 +5,7 @@ struct BankRatesView: View {
     @StateObject private var rateFetcher = BankRateFetcher()
 
     private var banksWithSelectedTypes: [FinancialInstitution] {
-        return settingsViewModel.financialInstitutions.filter { institution in
+        return settingsViewModel.getFilteredInstitutions().filter { institution in
             !institution.selectedMortgageTypes.isEmpty
         }
     }

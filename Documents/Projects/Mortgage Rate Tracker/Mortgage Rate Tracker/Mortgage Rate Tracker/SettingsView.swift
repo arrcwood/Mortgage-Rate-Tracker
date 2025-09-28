@@ -58,6 +58,55 @@ struct SettingsView: View {
                 .padding(.vertical, 8)
             }
 
+            Section(header: Text("Mortgage Types")) {
+                VStack(alignment: .leading, spacing: 8) {
+                    if settingsViewModel.selectedMortgageTypeFilter != nil {
+                        Button(action: {
+                            settingsViewModel.clearMortgageTypeFilter()
+                        }) {
+                            HStack {
+                                Image(systemName: "circle")
+                                    .foregroundColor(.blue)
+                                Text("Show All Types")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .padding(.vertical, 2)
+                    }
+
+                    ForEach(settingsViewModel.allMortgageTypes, id: \.self) { mortgageType in
+                        Button(action: {
+                            settingsViewModel.selectMortgageTypeFilter(mortgageType)
+                        }) {
+                            HStack {
+                                Image(systemName: settingsViewModel.selectedMortgageTypeFilter == mortgageType ? "largecircle.fill.circle" : "circle")
+                                    .foregroundColor(settingsViewModel.selectedMortgageTypeFilter == mortgageType ? .blue : .secondary)
+                                Text(mortgageType)
+                                    .foregroundColor(.primary)
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .padding(.vertical, 2)
+                    }
+
+                    if settingsViewModel.selectedMortgageTypeFilter != nil {
+                        HStack {
+                            Image(systemName: "info.circle")
+                                .foregroundColor(.blue)
+                                .font(.caption)
+                            Text("Showing institutions that offer: \(settingsViewModel.selectedMortgageTypeFilter!)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.top, 8)
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+
             Section(header: HStack {
                 Text("Financial Institutions")
                 Spacer()
@@ -67,7 +116,7 @@ struct SettingsView: View {
                 .font(.caption)
                 .foregroundColor(.blue)
             }) {
-                ForEach(settingsViewModel.financialInstitutions) { institution in
+                ForEach(settingsViewModel.getFilteredInstitutions()) { institution in
                     VStack(alignment: .leading) {
                         Button(action: {
                             settingsViewModel.toggleBankExpansion(institution.id)

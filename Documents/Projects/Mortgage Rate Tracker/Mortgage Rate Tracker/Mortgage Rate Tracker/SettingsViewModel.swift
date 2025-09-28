@@ -7,11 +7,14 @@ class SettingsViewModel: ObservableObject {
     @Published var expandedBanks: Set<UUID> = []
     @Published var loanParameters = LoanParameters.defaultParameters
     @Published var showingParametersSheet = false
+    @Published var selectedMortgageTypeFilter: String? = nil
+    @Published var allMortgageTypes: [String] = []
 
     init() {
         loadFinancialInstitutions()
         loadSelectedMortgageTypes()
         loadLoanParameters()
+        loadSelectedMortgageTypeFilter()
     }
 
     func loadFinancialInstitutions() {
@@ -25,6 +28,7 @@ class SettingsViewModel: ObservableObject {
             let decoder = JSONDecoder()
             let bankRatesData = try decoder.decode(BankRatesData.self, from: data)
             financialInstitutions = bankRatesData.banks
+            generateAllMortgageTypes()
         } catch {
             print("Error decoding bankRates.json: \(error)")
         }
@@ -136,5 +140,47 @@ class SettingsViewModel: ObservableObject {
             return
         }
         loanParameters = savedParameters
+    }
+
+    private func generateAllMortgageTypes() {
+        var uniqueTypes = Set<String>()
+        for institution in financialInstitutions {
+            for mortgageType in institution.mortgageTypes {
+                uniqueTypes.insert(mortgageType)
+            }
+        }
+        allMortgageTypes = Array(uniqueTypes).sorted()
+    }
+
+    func selectMortgageTypeFilter(_ mortgageType: String?) {
+        selectedMortgageTypeFilter = mortgageType
+        saveSelectedMortgageTypeFilter()
+    }
+
+    func clearMortgageTypeFilter() {
+        selectedMortgageTypeFilter = nil
+        saveSelectedMortgageTypeFilter()
+    }
+
+    private func saveSelectedMortgageTypeFilter() {
+        if let filter = selectedMortgageTypeFilter {
+            UserDefaults.standard.set(filter, forKey: "selectedMortgageTypeFilter")
+        } else {
+            UserDefaults.standard.removeObject(forKey: "selectedMortgageTypeFilter")
+        }
+    }
+
+    private func loadSelectedMortgageTypeFilter() {
+        selectedMortgageTypeFilter = UserDefaults.standard.string(forKey: "selectedMortgageTypeFilter")
+    }
+
+    func getFilteredInstitutions() -> [FinancialInstitution] {
+        guard let filter = selectedMortgageTypeFilter else {
+            return financialInstitutions
+        }
+
+        return financialInstitutions.filter { institution in
+            institution.mortgageTypes.contains(filter)
+        }
     }
 }
