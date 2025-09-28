@@ -184,15 +184,84 @@ class WebViewRateFetcher: NSObject, ObservableObject {
         """
     }
 
-    private func extractRates() {
-        guard let institution = currentInstitution else {
-            completion?(.failure(URLError(.unknown)))
-            return
-        }
-
-        let extractionJavaScript = """
+    private func extractChaseRates() -> String {
+        return """
         (function() {
-            console.log('Starting rate extraction...');
+            console.log('Starting Chase rate extraction...');
+
+            const rates = [];
+
+            // Chase bank specific extraction - look for table rows
+            const tableRows = document.querySelectorAll('tr');
+            console.log('Found', tableRows.length, 'table rows');
+
+            for (let i = 0; i < tableRows.length; i++) {
+                const row = tableRows[i];
+                const rowText = row.textContent.trim();
+
+                // Skip header rows and empty rows
+                if (!rowText || rowText.includes('Product') || rowText.includes('Interest Rate') || rowText.includes('APR')) {
+                    continue;
+                }
+
+                // Look for rows that contain mortgage product names
+                if (rowText.includes('Fixed') || rowText.includes('FHA') || rowText.includes('ARM') || rowText.includes('Jumbo')) {
+                    const cells = row.querySelectorAll('td');
+
+                    if (cells.length >= 3) {
+                        const productName = cells[0].textContent.trim();
+                        const interestRate = cells[1].textContent.trim();
+                        const apr = cells[2].textContent.trim();
+
+                        console.log('Found Chase rate:', { productName, interestRate, apr });
+
+                        rates.push({
+                            productName: productName,
+                            interestRate: interestRate,
+                            apr: apr,
+                            points: 'N/A'  // Chase doesn't display points in the basic table
+                        });
+                    }
+                }
+            }
+
+            // If no table structure, try alternative approach
+            if (rates.length === 0) {
+                console.log('No table structure found, trying percentage-based extraction...');
+
+                // Look for elements containing percentage signs
+                const percentElements = document.querySelectorAll('*');
+                let foundRates = [];
+
+                percentElements.forEach(el => {
+                    if (el.textContent && el.textContent.includes('%')) {
+                        const text = el.textContent.trim();
+                        // Match patterns like "6.125%" or "6.213%"
+                        const rateMatch = text.match(/\\d+\\.\\d+%/);
+                        if (rateMatch) {
+                            foundRates.push({
+                                element: el,
+                                rate: rateMatch[0],
+                                context: text.substring(0, 50)
+                            });
+                        }
+                    }
+                });
+
+                console.log('Found percentage elements:', foundRates.length);
+                return { rates: [], debug: { percentages: foundRates.slice(0, 10) } };
+            }
+
+            console.log('Chase extraction completed, found', rates.length, 'rates');
+            return { rates: rates, debug: 'Chase Success' };
+        })();
+        """
+    }
+
+    private func extractBankOfAmericaRates() -> String {
+        return """
+        (function() {
+            console.log('Starting Bank of America rate extraction...');
 
             const rates = [];
 
@@ -320,9 +389,28 @@ class WebViewRateFetcher: NSObject, ObservableObject {
             });
 
             console.log('Total rates extracted:', rates.length);
-            return { rates: rates, debug: 'Success' };
+            return { rates: rates, debug: 'Bank of America Success' };
         })();
         """
+    }
+
+    private func extractRates() {
+        guard let institution = currentInstitution else {
+            completion?(.failure(URLError(.unknown)))
+            return
+        }
+
+        let extractionJavaScript: String
+
+        // Use different extraction logic based on the bank
+        switch institution.name {
+        case "Chase":
+            extractionJavaScript = extractChaseRates()
+        case "Bank of America":
+            extractionJavaScript = extractBankOfAmericaRates()
+        default:
+            extractionJavaScript = extractBankOfAmericaRates() // Default to BoA approach
+        }
 
         webView?.evaluateJavaScript(extractionJavaScript) { [weak self] result, error in
             if let error = error {
@@ -361,7 +449,19 @@ class WebViewRateFetcher: NSObject, ObservableObject {
                     continue
                 }
 
-                let mappedMortgageType = self?.mapBankOfAmericaProductName(productName) ?? productName
+                let mappedMortgageType: String
+                if let institution = self?.currentInstitution {
+                    switch institution.name {
+                    case "Chase":
+                        mappedMortgageType = self?.mapChaseProductName(productName) ?? productName
+                    case "Bank of America":
+                        mappedMortgageType = self?.mapBankOfAmericaProductName(productName) ?? productName
+                    default:
+                        mappedMortgageType = productName
+                    }
+                } else {
+                    mappedMortgageType = productName
+                }
 
                 // Only include if the user selected this mortgage type
                 if let institution = self?.currentInstitution,
@@ -383,6 +483,29 @@ class WebViewRateFetcher: NSObject, ObservableObject {
 
             print("Filtered to \(bankRates.count) selected rates")
             self?.completion?(.success(bankRates))
+        }
+    }
+
+    private func mapChaseProductName(_ productName: String) -> String {
+        // Chase product names should already match bankRates.json format
+        // but provide mapping for any variations found on their website
+        switch productName {
+        case "30 Year Fixed", "30-Year Fixed Rate":
+            return "30-year Fixed"
+        case "30 Year FHA", "30-Year FHA":
+            return "30-year FHA"
+        case "15 Year Fixed", "15-Year Fixed Rate":
+            return "15-year Fixed"
+        case "7/6 ARM", "7/6-Month ARM":
+            return "7/6-month ARM"
+        case "5/6 ARM", "5/6-Month ARM":
+            return "5/6-month ARM"
+        case "30 Year Jumbo", "30-Year Jumbo":
+            return "30-year Jumbo"
+        case "10/6 Interest Only ARM", "10/6 IO Jumbo ARM":
+            return "10/6 Interest Only Jumbo ARM"
+        default:
+            return productName
         }
     }
 
