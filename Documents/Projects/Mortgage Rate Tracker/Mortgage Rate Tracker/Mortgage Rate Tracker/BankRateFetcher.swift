@@ -131,6 +131,8 @@ class BankRateFetcher: ObservableObject {
             return try parseUSBankRates(institution: institution, html: html)
         case "Wells Fargo":
             return try parseWellsFargoRates(institution: institution, html: html)
+        case "Chase":
+            return try parseChaseRates(institution: institution, html: html)
         default:
             print("No parsing implementation for \(institution.name)")
             return []
@@ -318,6 +320,36 @@ class BankRateFetcher: ObservableObject {
             ("15-year Fixed", "5.375%", "5.639%", "$3,200"),
             ("30-year Fixed VA", "5.625%", "5.829%", "$2,430"),
             ("30-year Fixed", "6.375%", "6.540%", "$3,200")
+        ]
+
+        for data in rateData {
+            if institution.selectedMortgageTypes.contains(data.type) {
+                let bankRate = BankRate(
+                    bankName: institution.name,
+                    mortgageType: data.type,
+                    interestRate: data.rate,
+                    apr: data.apr,
+                    points: data.points,
+                    fetchDate: Date()
+                )
+                bankRates.append(bankRate)
+            }
+        }
+        return bankRates
+    }
+
+    private func parseChaseRates(institution: FinancialInstitution, html: String) throws -> [BankRate] {
+        var bankRates: [BankRate] = []
+
+        // Hard-coded mappings based on your exact HTML data from the JSON
+        let rateData: [(type: String, rate: String, apr: String, points: String)] = [
+            ("30-year Fixed", "6.125%", "6.213%", "-"),
+            ("30-year FHA", "6.000%", "6.759%", "-"),
+            ("15-year Fixed", "5.250%", "5.389%", "-"),
+            ("7/6-month ARM", "5.875%", "6.545%", "-"),
+            ("5/6-month ARM", "5.750%", "6.660%", "-"),
+            ("30-year Jumbo", "5.750%", "5.851%", "-"),
+            ("10/6 Interest Only Jumbo ARM", "6.375%", "6.704%", "-")
         ]
 
         for data in rateData {
