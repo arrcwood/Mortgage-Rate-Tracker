@@ -28,6 +28,20 @@ struct BankRatesView: View {
         }
     }
 
+    private func getInstitutionsForFetching() -> [FinancialInstitution] {
+        if let filter = settingsViewModel.selectedMortgageTypeFilter {
+            // When filtering by mortgage type, modify institutions to have that type selected
+            return banksWithSelectedTypes.map { institution in
+                var modifiedInstitution = institution
+                modifiedInstitution.selectedMortgageTypes = [filter]
+                return modifiedInstitution
+            }
+        } else {
+            // When not filtering, use institutions as they are
+            return banksWithSelectedTypes
+        }
+    }
+
     var body: some View {
         NavigationView {
             List {
@@ -101,14 +115,16 @@ struct BankRatesView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Fetch Rates") {
-                        rateFetcher.fetchRatesForSelectedBanks(banksWithSelectedTypes, parameters: settingsViewModel.loanParameters, forceFetch: true)
+                        let institutionsToFetch = getInstitutionsForFetching()
+                        rateFetcher.fetchRatesForSelectedBanks(institutionsToFetch, parameters: settingsViewModel.loanParameters, forceFetch: true)
                     }
                     .disabled(rateFetcher.isLoading || banksWithSelectedTypes.isEmpty)
                 }
             }
             .onAppear {
                 if !banksWithSelectedTypes.isEmpty && rateFetcher.rates.isEmpty {
-                    rateFetcher.fetchRatesForSelectedBanks(banksWithSelectedTypes, parameters: settingsViewModel.loanParameters)
+                    let institutionsToFetch = getInstitutionsForFetching()
+                    rateFetcher.fetchRatesForSelectedBanks(institutionsToFetch, parameters: settingsViewModel.loanParameters)
                 }
             }
         }
