@@ -53,31 +53,87 @@ class WebViewRateFetcher: NSObject, ObservableObject {
 
         print("Filling form with: Purchase=\(parameters.purchasePrice), Down=\(parameters.downPayment), ZIP=\(parameters.zipCode)")
 
-        // JavaScript to first check what elements exist, then fill the form
-        let debugAndFillJS = """
-        (function() {
-            console.log('Starting form debugging and fill process...');
+        let fillJS: String
 
-            // First, let's see what input fields exist on the page
-            const allInputs = document.querySelectorAll('input');
-            console.log('Found', allInputs.length, 'input elements');
+        // Handle different banks with different form structures
+        switch institution.name {
+        case "Chase":
+            fillJS = fillChaseForm(parameters: parameters)
+        case "Bank of America":
+            fillJS = fillBankOfAmericaForm(parameters: parameters)
+        default:
+            completion?(.failure(URLError(.unsupportedURL)))
+            return
+        }
 
-            // Log first 10 input elements with their IDs, names, and values
-            for (let i = 0; i < Math.min(10, allInputs.length); i++) {
-                const input = allInputs[i];
-                console.log('Input', i, '- id:', input.id, 'name:', input.name, 'value:', input.value, 'type:', input.type);
+        webView?.evaluateJavaScript(fillJS) { [weak self] result, error in
+            if let error = error {
+                print("JavaScript error: \(error)")
+                self?.completion?(.failure(error))
+                return
             }
 
-            // Look for elements that might be the fields we want
-            const purchaseFields = document.querySelectorAll('[id*="purchase"], [name*="purchase"], [placeholder*="purchase"]');
-            const downFields = document.querySelectorAll('[id*="down"], [name*="down"], [placeholder*="down"]');
-            const zipFields = document.querySelectorAll('[id*="zip"], [name*="zip"], [placeholder*="zip"]');
+            print("Form filled successfully")
 
-            console.log('Purchase-related fields:', purchaseFields.length);
-            console.log('Down-payment-related fields:', downFields.length);
-            console.log('ZIP-related fields:', zipFields.length);
+            // Wait a moment for the page to update, then extract rates
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                self?.extractRates()
+            }
+        }
+    }
 
-            // Function to trigger change events
+    private func fillChaseForm(parameters: LoanParameters) -> String {
+        return """
+        (function() {
+            console.log('Filling Chase form with ZIP: \(parameters.zipCode)');
+
+            // Look for the ZIP code input field using various selectors
+            let zipField = document.querySelector('input[name="ZIP code"]') ||
+                          document.querySelector('input[aria-label="ZIP code"]') ||
+                          document.querySelector('input[pattern="[0-9]{5}"]') ||
+                          document.querySelector('input[maxlength="5"]') ||
+                          document.querySelector('input[autocomplete="postal-code"]');
+
+            if (zipField) {
+                zipField.value = '\(parameters.zipCode)';
+                zipField.focus();
+
+                // Trigger input events
+                zipField.dispatchEvent(new Event('input', { bubbles: true }));
+                zipField.dispatchEvent(new Event('change', { bubbles: true }));
+                zipField.dispatchEvent(new Event('blur', { bubbles: true }));
+
+                console.log('Filled ZIP code:', zipField.value);
+
+                // Wait a moment, then click the "See Rates" button
+                setTimeout(function() {
+                    let seeRatesButton = document.querySelector('button[data-pt-name="sm_next"]') ||
+                                        document.querySelector('button:contains("See Rates")') ||
+                                        document.querySelector('button .btn-primary-button-text:contains("See Rates")');
+
+                    if (seeRatesButton) {
+                        console.log('Clicking See Rates button');
+                        seeRatesButton.click();
+                    } else {
+                        console.log('See Rates button not found');
+                    }
+                }, 1000);
+
+                return 'SUCCESS';
+            } else {
+                console.log('ZIP code field not found');
+                return 'ERROR: ZIP field not found';
+            }
+        })();
+        """
+    }
+
+    private func fillBankOfAmericaForm(parameters: LoanParameters) -> String {
+        return """
+        (function() {
+            console.log('Filling Bank of America form...');
+
+            // Bank of America form filling logic (existing)
             function triggerChange(element) {
                 const events = ['input', 'change', 'blur'];
                 events.forEach(eventType => {
@@ -86,27 +142,15 @@ class WebViewRateFetcher: NSObject, ObservableObject {
                 });
             }
 
-            // Try to fill all fields
             try {
                 let filledCount = 0;
 
-                // Try specific IDs first
                 const purchaseField = document.querySelector('#purchase-price-input-medium');
                 if (purchaseField) {
                     purchaseField.value = '\(parameters.purchasePrice)';
                     purchaseField.focus();
                     triggerChange(purchaseField);
-                    console.log('Filled purchase price:', purchaseField.value);
                     filledCount++;
-                } else if (purchaseFields.length > 0) {
-                    // Try first purchase-related field
-                    purchaseFields[0].value = '\(parameters.purchasePrice)';
-                    purchaseFields[0].focus();
-                    triggerChange(purchaseFields[0]);
-                    console.log('Filled purchase price (alt):', purchaseFields[0].value);
-                    filledCount++;
-                } else {
-                    console.log('No purchase field found');
                 }
 
                 const downField = document.querySelector('#down-payment-input-medium');
@@ -114,16 +158,7 @@ class WebViewRateFetcher: NSObject, ObservableObject {
                     downField.value = '\(parameters.downPayment)';
                     downField.focus();
                     triggerChange(downField);
-                    console.log('Filled down payment:', downField.value);
                     filledCount++;
-                } else if (downFields.length > 0) {
-                    downFields[0].value = '\(parameters.downPayment)';
-                    downFields[0].focus();
-                    triggerChange(downFields[0]);
-                    console.log('Filled down payment (alt):', downFields[0].value);
-                    filledCount++;
-                } else {
-                    console.log('No down payment field found');
                 }
 
                 const zipField = document.querySelector('#zip-code-input-medium');
@@ -131,25 +166,13 @@ class WebViewRateFetcher: NSObject, ObservableObject {
                     zipField.value = '\(parameters.zipCode)';
                     zipField.focus();
                     triggerChange(zipField);
-                    console.log('Filled ZIP code:', zipField.value);
                     filledCount++;
-                } else if (zipFields.length > 0) {
-                    zipFields[0].value = '\(parameters.zipCode)';
-                    zipFields[0].focus();
-                    triggerChange(zipFields[0]);
-                    console.log('Filled ZIP code (alt):', zipFields[0].value);
-                    filledCount++;
-                } else {
-                    console.log('No ZIP field found');
                 }
 
-                // Try to click update button
                 const updateButton = document.querySelector('#update-button-medium, [id*="update"], button:contains("Update"), button:contains("Calculate")');
                 if (updateButton) {
                     updateButton.click();
                     console.log('Clicked update button');
-                } else {
-                    console.log('Update button not found');
                 }
 
                 return 'FILLED_' + filledCount + '_FIELDS';
@@ -159,40 +182,9 @@ class WebViewRateFetcher: NSObject, ObservableObject {
             }
         })();
         """
-
-        webView?.evaluateJavaScript(debugAndFillJS) { [weak self] result, error in
-            if let error = error {
-                print("JavaScript error: \(error)")
-                self?.completion?(.failure(error))
-                return
-            }
-
-            if let result = result as? String {
-                print("Form fill result: \(result)")
-
-                if result.hasPrefix("FILLED_") {
-                    // Wait a moment then extract the rates
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                        self?.extractRatesFromWebView()
-                    }
-                } else {
-                    print("Form filling issue: \(result)")
-                    // Still try to extract rates in case the page has default data
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                        self?.extractRatesFromWebView()
-                    }
-                }
-            } else {
-                print("Unexpected result type: \(type(of: result))")
-                // Still try to extract rates
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    self?.extractRatesFromWebView()
-                }
-            }
-        }
     }
 
-    private func extractRatesFromWebView() {
+    private func extractRates() {
         guard let institution = currentInstitution else {
             completion?(.failure(URLError(.unknown)))
             return

@@ -69,13 +69,13 @@
             "name": "Chase",
             "url": "https://www.chase.com/personal/mortgage/mortgage-rates",
             "mortgageTypes": [
-                "30-year fixed",
+                "30-year Fixed",
                 "30-year FHA",
-                "15-year fixed",
+                "15-year Fixed",
                 "7/6-month ARM",
                 "5/6-month ARM",
-                "30-year jumbo",
-                "10/6 interest only jumbo ARM"
+                "30-year Jumbo",
+                "10/6 Interest Only Jumbo ARM"
             ],
             "fields": [
                 {

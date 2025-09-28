@@ -67,6 +67,9 @@ class BankRateFetcher: ObservableObject {
         case "Bank of America":
             return webViewFetcher.fetchRates(for: institution, parameters: parameters)
                 .eraseToAnyPublisher()
+        case "Chase":
+            return webViewFetcher.fetchRates(for: institution, parameters: parameters)
+                .eraseToAnyPublisher()
         default:
             let urlString = buildURLForBank(institution, parameters: parameters)
 
