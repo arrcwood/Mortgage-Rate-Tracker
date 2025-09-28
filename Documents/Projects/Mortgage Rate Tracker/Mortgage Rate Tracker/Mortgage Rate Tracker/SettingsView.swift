@@ -116,7 +116,7 @@ struct SettingsView: View {
                 .font(.caption)
                 .foregroundColor(.blue)
             }) {
-                ForEach(settingsViewModel.getFilteredInstitutions()) { institution in
+                ForEach(settingsViewModel.financialInstitutions) { institution in
                     VStack(alignment: .leading) {
                         Button(action: {
                             settingsViewModel.toggleBankExpansion(institution.id)

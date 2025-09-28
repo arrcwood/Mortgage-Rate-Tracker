@@ -5,9 +5,21 @@ struct BankRatesView: View {
     @StateObject private var rateFetcher = BankRateFetcher()
 
     private var banksWithSelectedTypes: [FinancialInstitution] {
-        return settingsViewModel.getFilteredInstitutions().filter { institution in
-            !institution.selectedMortgageTypes.isEmpty
+        return settingsViewModel.financialInstitutions.filter { institution in
+            !institution.selectedMortgageTypes.isEmpty &&
+            (settingsViewModel.selectedMortgageTypeFilter == nil ||
+             institution.mortgageTypes.contains(settingsViewModel.selectedMortgageTypeFilter!))
         }
+    }
+
+    private func getFilteredMortgageTypes(for institution: FinancialInstitution) -> [String] {
+        let selectedTypes = institution.mortgageTypes.filter { institution.selectedMortgageTypes.contains($0) }
+
+        if let filter = settingsViewModel.selectedMortgageTypeFilter {
+            return selectedTypes.filter { $0 == filter }
+        }
+
+        return selectedTypes
     }
 
     var body: some View {
@@ -42,7 +54,7 @@ struct BankRatesView: View {
                                     .scaleEffect(0.8)
                             }
                         }) {
-                            ForEach(institution.mortgageTypes.filter { institution.selectedMortgageTypes.contains($0) }, id: \.self) { mortgageType in
+                            ForEach(getFilteredMortgageTypes(for: institution), id: \.self) { mortgageType in
                                 VStack(alignment: .leading, spacing: 4) {
                                     HStack {
                                         Text(mortgageType)

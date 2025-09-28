@@ -174,13 +174,4 @@ class SettingsViewModel: ObservableObject {
         selectedMortgageTypeFilter = UserDefaults.standard.string(forKey: "selectedMortgageTypeFilter")
     }
 
-    func getFilteredInstitutions() -> [FinancialInstitution] {
-        guard let filter = selectedMortgageTypeFilter else {
-            return financialInstitutions
-        }
-
-        return financialInstitutions.filter { institution in
-            institution.mortgageTypes.contains(filter)
-        }
-    }
 }
